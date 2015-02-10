@@ -169,447 +169,442 @@ object_t *is_symbol_proc(object_t *arguments) {
 	return is_symbol(car(arguments)) ? true : false;
 }
 	
+//TODO number / integer / float
 object_t *is_integer_proc(object_t *arguments) {
 	return is_fixnum(car(arguments)) ? true : false;
 }
+
+object_t *is_char_proc(object_t *arguments) {
+	return is_character(car(arguments)) ? true : false;
+}
+
+object_t *is_string_proc(object_t *arguments) {
+	return is_string(car(arguments)) ? true : false;
+}
+
+object_t *is_pair_proc(object_t *arguments) {
+	return is_pair(car(arguments)) ? true : false;
+}
+
+object_t *is_procedure_proc(object_t *arguments) {
+	object_t *obj;
 	
-	object *is_char_proc(object *arguments) {
-		return is_character(car(arguments)) ? true : false;
+	obj = car(arguments);
+	return (is_primitive_proc(obj) ||
+	is_compound_proc(obj)) ?
+	true :
+	false;
+}
+
+//TODO number / integer / float
+object_t *char_to_integer_proc(object_t *arguments) {
+	return make_fixnum((car(arguments))->data.character.value);
+}
+
+//TODO number / integer /float
+object_t *integer_to_char_proc(object_t *arguments) {
+	return make_character((car(arguments))->data.fixnum.value);
+}
+
+//TODO number / integer / float
+object_t *number_to_string_proc(object_t *arguments) {
+	char buffer[100];
+	
+	sprintf(buffer, "%ld", (car(arguments))->data.fixnum.value);
+	return make_string(buffer);
+}
+
+//TODO number / integer / float
+object_t *string_to_number_proc(object_t *arguments) {
+	return make_fixnum(atoi((car(arguments))->data.string.value));
+}
+
+object_t *symbol_to_string_proc(object_t *arguments) {
+	return make_string((car(arguments))->data.symbol.value);
+}
+
+object_t *string_to_symbol_proc(object_t *arguments) {
+	return make_symbol((car(argument))->data.string.value);
+}
+
+//TODO number / integer /float (+ 1 2 3 4)
+object_t *add_proc(object_t *arguments) {
+	long result = 0;
+	
+	while (!is_the_empty_list(arguments)) {
+		result += (car(arguments))->data.fixnum.value;
+		arguments = cdr(arguments);
 	}
+	return make_fixnum(result);
+}
+
+//TODO number / integer /float (- 1 2 3 4)
+object_t *sub_proc(object_t *arguments) {
+	long result;
 	
-	object *is_string_proc(object *arguments) {
-		return is_string(car(arguments)) ? true : false;
+	result = (car(arguments))->data.fixnum.value;
+	while (!is_the_empty_list(arguments = cdr(arguments))) {
+		result -= (car(arguments))->data.fixnum.value;
 	}
+	return make_fixnum(result);
+}
+
+//TODO number / integer /float (* 1 2 3 4)
+object_t *mul_proc(object_t *arguments) {
+	long result = 1;
 	
-	object *is_pair_proc(object *arguments) {
-		return is_pair(car(arguments)) ? true : false;
+	while (!is_the_empty_list(arguments)) {
+		result *= (car(arguments))->data.fixnum.value;
+		arguments = cdr(arguments);
 	}
+	return make_fixnum(result);
+}
+
+//TODO number / integer /float (div 1 2)
+object_t *quotient_proc(object_t *arguments) {
+	return make_fixnum(
+		((car(arguments) )->data.fixnum.value)/
+		((cadr(arguments))->data.fixnum.value));
+}
+
+//TODO number / integer /float (reminder 1 2 3 4)
+object_t *remainder_proc(object_t *arguments) {
+	return make_fixnum(
+		((car(arguments) )->data.fixnum.value)%
+		((cadr(arguments))->data.fixnum.value));
+}
+
+//TODO number / integer /float (=?)
+object_t *is_number_equal_proc(object_t *arguments) {
+	long value;
 	
-	char is_compound_proc(object *obj);
-	
-	object *is_procedure_proc(object *arguments) {
-		object *obj;
-		
-		obj = car(arguments);
-		return (is_primitive_proc(obj) ||
-		is_compound_proc(obj)) ?
-		true :
-		false;
-	}
-	
-	object *char_to_integer_proc(object *arguments) {
-		return make_fixnum((car(arguments))->data.character.value);
-	}
-	
-	object *integer_to_char_proc(object *arguments) {
-		return make_character((car(arguments))->data.fixnum.value);
-	}
-	
-	object *number_to_string_proc(object *arguments) {
-		char buffer[100];
-		
-		sprintf(buffer, "%ld", (car(arguments))->data.fixnum.value);
-		return make_string(buffer);
-	}
-	
-	object *string_to_number_proc(object *arguments) {
-		return make_fixnum(atoi((car(arguments))->data.string.value));
-	}
-	
-	object *symbol_to_string_proc(object *arguments) {
-		return make_string((car(arguments))->data.symbol.value);
-	}
-	
-	object *string_to_symbol_proc(object *arguments) {
-		return make_symbol((car(arguments))->data.string.value);
-	}
-	
-	object *add_proc(object *arguments) {
-		long result = 0;
-		
-		while (!is_the_empty_list(arguments)) {
-			result += (car(arguments))->data.fixnum.value;
-			arguments = cdr(arguments);
-		}
-		return make_fixnum(result);
-	}
-	
-	object *sub_proc(object *arguments) {
-		long result;
-		
-		result = (car(arguments))->data.fixnum.value;
-		while (!is_the_empty_list(arguments = cdr(arguments))) {
-			result -= (car(arguments))->data.fixnum.value;
-		}
-		return make_fixnum(result);
-	}
-	
-	object *mul_proc(object *arguments) {
-		long result = 1;
-		
-		while (!is_the_empty_list(arguments)) {
-			result *= (car(arguments))->data.fixnum.value;
-			arguments = cdr(arguments);
-		}
-		return make_fixnum(result);
-	}
-	
-	object *quotient_proc(object *arguments) {
-		return make_fixnum(
-			((car(arguments) )->data.fixnum.value)/
-			((cadr(arguments))->data.fixnum.value));
-	}
-	
-	object *remainder_proc(object *arguments) {
-		return make_fixnum(
-			((car(arguments) )->data.fixnum.value)%
-			((cadr(arguments))->data.fixnum.value));
-	}
-	
-	object *is_number_equal_proc(object *arguments) {
-		long value;
-		
-		value = (car(arguments))->data.fixnum.value;
-		while (!is_the_empty_list(arguments = cdr(arguments))) {
-			if (value != ((car(arguments))->data.fixnum.value)) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	object *is_less_than_proc(object *arguments) {
-		long previous;
-		long next;
-		
-		previous = (car(arguments))->data.fixnum.value;
-		while (!is_the_empty_list(arguments = cdr(arguments))) {
-			next = (car(arguments))->data.fixnum.value;
-			if (previous < next) {
-				previous = next;
-			}
-			else {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	object *is_greater_than_proc(object *arguments) {
-		long previous;
-		long next;
-		
-		previous = (car(arguments))->data.fixnum.value;
-		while (!is_the_empty_list(arguments = cdr(arguments))) {
-			next = (car(arguments))->data.fixnum.value;
-			if (previous > next) {
-				previous = next;
-			}
-			else {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	object *cons_proc(object *arguments) {
-		return cons(car(arguments), cadr(arguments));
-	}
-	
-	object *car_proc(object *arguments) {
-		return caar(arguments);
-	}
-	
-	object *cdr_proc(object *arguments) {
-		return cdar(arguments);
-	}
-	
-	object *set_car_proc(object *arguments) {
-		set_car(car(arguments), cadr(arguments));
-		return ok_symbol;
-	}
-	
-	object *set_cdr_proc(object *arguments) {
-		set_cdr(car(arguments), cadr(arguments));
-		return ok_symbol;
-	}
-	
-	object *list_proc(object *arguments) {
-		return arguments;
-	}
-	
-	object *is_eq_proc(object *arguments) {
-		object *obj1;
-		object *obj2;
-		
-		obj1 = car(arguments);
-		obj2 = cadr(arguments);
-		
-		if (obj1->type != obj2->type) {
+	value = (car(arguments))->data.fixnum.value;
+	while (!is_the_empty_list(arguments = cdr(arguments))) {
+		if (value != ((car(arguments))->data.fixnum.value)) {
 			return false;
 		}
-		switch (obj1->type) {
-			case FIXNUM:
-				return (obj1->data.fixnum.value == 
-				obj2->data.fixnum.value) ?
-				true : false;
-				break;
-			case CHARACTER:
-				return (obj1->data.character.value == 
-				obj2->data.character.value) ?
-				true : false;
-				break;
-			case STRING:
-				return (strcmp(obj1->data.string.value, 
-							   obj2->data.string.value) == 0) ?
-							   true : false;
-							   break;
-			default:
-				return (obj1 == obj2) ? true : false;
+	}
+	return true;
+}
+
+//TODO number / integer /float (< 1 2)
+object_t *is_less_than_proc(object_t *arguments) {
+	long previous;
+	long next;
+	
+	previous = (car(arguments))->data.fixnum.value;
+	while (!is_the_empty_list(arguments = cdr(arguments))) {
+		next = (car(arguments))->data.fixnum.value;
+		if (previous < next) {
+			previous = next;
+		}
+		else {
+			return false;
 		}
 	}
+	return true;
+}
+
+//TODO number / integer /float (> 1 2)
+object_t *is_greater_than_proc(object_t *arguments) {
+	long previous;
+	long next;
 	
-	object *apply_proc(object *arguments) {
-		fprintf(stderr, "illegal state: The body of the apply "
-		"primitive procedure should not execute.\n");
-		exit(1);
-	}
-	
-	object *interaction_environment_proc(object *arguments) {
-		return the_global_environment;
-	}
-	
-	object *setup_environment(void);
-	
-	object *null_environment_proc(object *arguments) {
-		return setup_environment();
-	}
-	
-	object *make_environment(void);
-	
-	object *environment_proc(object *arguments) {
-		return make_environment();
-	}
-	
-	object *eval_proc(object *arguments) {
-		fprintf(stderr, "illegal state: The body of the eval "
-		"primitive procedure should not execute.\n");
-		exit(1);
-	}
-	
-	object *read(FILE *in);
-	object *eval(object *exp, object *env);
-	
-	object *load_proc(object *arguments) {
-		char *filename;
-		FILE *in;
-		object *exp;
-		object *result;
-		
-		filename = car(arguments)->data.string.value;
-		in = fopen(filename, "r");
-		if (in == NULL) {
-			fprintf(stderr, "could not load file \"%s\"", filename);
-			exit(1);
+	previous = (car(arguments))->data.fixnum.value;
+	while (!is_the_empty_list(arguments = cdr(arguments))) {
+		next = (car(arguments))->data.fixnum.value;
+		if (previous > next) {
+			previous = next;
 		}
-		while ((exp = read(in)) != NULL) {
-			result = eval(exp, the_global_environment);
+		else {
+			return false;
 		}
-		fclose(in);
-		return result;
 	}
+	return true;
+}
+
+object_t *cons_proc(object_t *arguments) {
+	return cons(car(arguments), cadr(arguments));
+}
+
+object_t *car_proc(object_t *arguments) {
+	return caar(arguments);
+}
+
+object_t *cdr_proc(object_t *arguments) {
+	return cdar(arguments);
+}
+
+object_t *set_car_proc(object_t *arguments) {
+	set_car(car(arguments), cadr(arguments));
+	return ok_symbol;
+}
+
+object_t *set_cdr_proc(object_T *arguments) {
+	set_cdr(car(arguments), cadr(arguments));
+	return ok_symbol;
+}
+
+object_t *list_proc(object_t *arguments) {
+	return arguments;
+}
+
+//TODO number / integer /float
+object_t *is_eq_proc(object_t *arguments) {
+	object *obj1;
+	object *obj2;
 	
-	object *make_input_port(FILE *in);
+	obj1 = car(arguments);
+	obj2 = cadr(arguments);
 	
-	object *open_input_port_proc(object *arguments) {
-		char *filename;
-		FILE *in;
-		
-		filename = car(arguments)->data.string.value;
-		in = fopen(filename, "r");
-		if (in == NULL) {
-			fprintf(stderr, "could not open file \"%s\"\n", filename);
-			exit(1);
-		}
-		return make_input_port(in);
+	if (obj1->type != obj2->type) {
+		return false;
 	}
-	
-	object *close_input_port_proc(object *arguments) {
-		int result;
-		
-		result = fclose(car(arguments)->data.input_port.stream);
-		if (result == EOF) {
-			fprintf(stderr, "could not close input port\n");
-			exit(1);
-		}
-		return ok_symbol;
+	switch (obj1->type) {
+		case FIXNUM:
+			return (obj1->data.fixnum.value == 
+			obj2->data.fixnum.value) ?
+			true : false;
+			break;
+		case CHARACTER:
+			return (obj1->data.character.value == 
+			obj2->data.character.value) ?
+			true : false;
+			break;
+		case STRING:
+			return (strcmp(obj1->data.string.value, 
+						   obj2->data.string.value) == 0) ?
+						   true : false;
+						   break;
+		default:
+			return (obj1 == obj2) ? true : false;
 	}
+}
+
+object_t *apply_proc(object_t *arguments) {
+	fprintf(stderr, "illegal state: The body of the apply "
+	"primitive procedure should not execute.\n");
+	exit(1);
+}
+
+object_t *interaction_environment_proc(object_t *arguments) {
+	return the_global_environment;
+}
+
+object_t *null_environment_proc(object_t *arguments) {
+	return setup_environment();
+}
+
+object_t *environment_proc(object_t *arguments) {
+	return make_environment();
+}
+
+object_t *eval_proc(object_t *arguments) {
+	fprintf(stderr, "illegal state: The body of the eval "
+	"primitive procedure should not execute.\n");
+	exit(1);
+}
+
+object_t *load_proc(object_t *arguments) {
+	char *filename;
+	FILE *in;
+	object_t *exp;
+	object_t *result;
 	
-	char is_input_port(object *obj);
-	
-	object *is_input_port_proc(object *arguments) {
-		return is_input_port(car(arguments)) ? true : false;
+	filename = car(arguments)->data.string.value;
+	in = fopen(filename, "r");
+	if (in == NULL) {
+		fprintf(stderr, "could not load file \"%s\"", filename);
+		//exit(1);
+		return bottom;
 	}
-	
-	object *read_proc(object *arguments) {
-		FILE *in;
-		object *result;
-		
-		in = is_the_empty_list(arguments) ?
-		stdin :
-		car(arguments)->data.input_port.stream;
-		result = read(in);
-		return (result == NULL) ? eof_object : result;
+	while ((exp = read(in)) != NULL) {
+		result = eval(exp, the_global_environment);
 	}
+	fclose(in);
+	return result;
+}
+
+object_t *open_input_port_proc(object_t *arguments) {
+	char *filename;
+	FILE *in;
 	
-	object *read_char_proc(object *arguments) {
-		FILE *in;
-		int result;
-		
-		in = is_the_empty_list(arguments) ?
-		stdin :
-		car(arguments)->data.input_port.stream;
-		result = getc(in);
-		return (result == EOF) ? eof_object : make_character(result);
+	filename = car(arguments)->data.string.value;
+	in = fopen(filename, "r");
+	if (in == NULL) {
+		fprintf(stderr, "could not open file \"%s\"\n", filename);
+		//exit(1);
+		return bottom;
 	}
+	return make_input_port(in);
+}
+
+object_t *close_input_port_proc(object_t *arguments) {
+	int result;
 	
-	int peek(FILE *in);
-	
-	object *peek_char_proc(object *arguments) {
-		FILE *in;
-		int result;
-		
-		in = is_the_empty_list(arguments) ?
-		stdin :
-		car(arguments)->data.input_port.stream;
-		result = peek(in);
-		return (result == EOF) ? eof_object : make_character(result);
+	result = fclose(car(arguments)->data.input_port.stream);
+	if (result == EOF) {
+		fprintf(stderr, "could not close input port\n");
+		//exit(1);
+		return bottom;
 	}
+	return ok_symbol;
+}
+
+object_t *is_input_port_proc(object_t *arguments) {
+	return is_input_port(car(arguments)) ? true : false;
+}
+
+object_t *read_proc(object_t *arguments) {
+	FILE *in;
+	object_t *result;
 	
-	char is_eof_object(object *obj);
+	in = is_the_empty_list(arguments) ?
+	stdin :
+	car(arguments)->data.input_port.stream;
+	result = read(in);
+	return (result == NULL) ? eof_object : result;
+}
+
+object_t *read_char_proc(object_t *arguments) {
+	FILE *in;
+	int result;
 	
-	object *is_eof_object_proc(object *arguments) {
-		return is_eof_object(car(arguments)) ? true : false;
+	in = is_the_empty_list(arguments) ?
+	stdin :
+	car(arguments)->data.input_port.stream;
+	result = getc(in);
+	return (result == EOF) ? eof_object : make_character(result);
+}
+
+object_t *peek_char_proc(object_t *arguments) {
+	FILE *in;
+	int result;
+	
+	in = is_the_empty_list(arguments) ?
+	stdin :
+	car(arguments)->data.input_port.stream;
+	result = peek(in);
+	return (result == EOF) ? eof_object : make_character(result);
+}
+
+object_t *is_eof_object_proc(object_t *arguments) {
+	return is_eof_object(car(arguments)) ? true : false;
+}
+
+object_t *open_output_port_proc(object_t *arguments) {
+	char *filename;
+	FILE *out;
+	
+	filename = car(arguments)->data.string.value;
+	out = fopen(filename, "w");
+	if (out == NULL) {
+		fprintf(stderr, "could not open file \"%s\"\n", filename);
+		//exit(1);
+		return bottom;
 	}
+	return make_output_port(out);
+}
+
+object_t *close_output_port_proc(object_t *arguments) {
+	int result;
 	
-	object *make_output_port(FILE *in);
-	
-	object *open_output_port_proc(object *arguments) {
-		char *filename;
-		FILE *out;
-		
-		filename = car(arguments)->data.string.value;
-		out = fopen(filename, "w");
-		if (out == NULL) {
-			fprintf(stderr, "could not open file \"%s\"\n", filename);
-			exit(1);
-		}
-		return make_output_port(out);
+	result = fclose(car(arguments)->data.output_port.stream);
+	if (result == EOF) {
+		fprintf(stderr, "could not close output port\n");
+		//exit(1);
+		return bottom;
 	}
+	return ok_symbol;
+}
+
+object_t *is_output_port_proc(object_t *arguments) {
+	return is_output_port(car(arguments)) ? true : false;
+}
+
+object_t *write_char_proc(object_t *arguments) {
+	object *character;
+	FILE *out;
 	
-	object *close_output_port_proc(object *arguments) {
-		int result;
-		
-		result = fclose(car(arguments)->data.output_port.stream);
-		if (result == EOF) {
-			fprintf(stderr, "could not close output port\n");
-			exit(1);
-		}
-		return ok_symbol;
-	}
+	character = car(arguments);
+	arguments = cdr(arguments);
+	out = is_the_empty_list(arguments) ?
+	stdout :
+	car(arguments)->data.output_port.stream;
+	putc(character->data.character.value, out);    
+	fflush(out);
+	return ok_symbol;
+}
+
+object_t *write_proc(object_t *arguments) {
+	object *exp;
+	FILE *out;
 	
-	char is_output_port(object *obj);
-	
-	object *is_output_port_proc(object *arguments) {
-		return is_output_port(car(arguments)) ? true : false;
-	}
-	
-	object *write_char_proc(object *arguments) {
-		object *character;
-		FILE *out;
-		
-		character = car(arguments);
+	exp = car(arguments);
+	arguments = cdr(arguments);
+	out = is_the_empty_list(arguments) ?
+	stdout :
+	car(arguments)->data.output_port.stream;
+	write(out, exp);
+	fflush(out);
+	return ok_symbol;
+}
+
+object_t *error_proc(object_t *arguments) {
+	while (!is_the_empty_list(arguments)) {
+		write(stderr, car(arguments));
+		fprintf(stderr, " ");
 		arguments = cdr(arguments);
-		out = is_the_empty_list(arguments) ?
-		stdout :
-		car(arguments)->data.output_port.stream;
-		putc(character->data.character.value, out);    
-		fflush(out);
-		return ok_symbol;
-	}
+	};
+	printf("\nexiting\n");
+	exit(1);
+}
+
+object_t *make_compound_proc(object_t *parameters, object_t *body, object_t *env) {
+	object_t *obj;
 	
-	void write(FILE *out, object *obj);
-	
-	object *write_proc(object *arguments) {
-		object *exp;
-		FILE *out;
-		
-		exp = car(arguments);
-		arguments = cdr(arguments);
-		out = is_the_empty_list(arguments) ?
-		stdout :
-		car(arguments)->data.output_port.stream;
-		write(out, exp);
-		fflush(out);
-		return ok_symbol;
-	}
-	
-	object *error_proc(object *arguments) {
-		while (!is_the_empty_list(arguments)) {
-			write(stderr, car(arguments));
-			fprintf(stderr, " ");
-			arguments = cdr(arguments);
-		};
-		printf("\nexiting\n");
-		exit(1);
-	}
-	
-	object *make_compound_proc(object *parameters, object *body,
-							   object* env) {
-		object *obj;
-		
-		obj = alloc_object();
-		obj->type = COMPOUND_PROC;
-		obj->data.compound_proc.parameters = parameters;
-		obj->data.compound_proc.body = body;
-		obj->data.compound_proc.env = env;
-		return obj;
-							   }
-							   
-							   char is_compound_proc(object *obj) {
-								   return obj->type == COMPOUND_PROC;
-							   }
-							   
-							   object *make_input_port(FILE *stream) {
-								   object *obj;
-								   
-								   obj = alloc_object();
-								   obj->type = INPUT_PORT;
-								   obj->data.input_port.stream = stream;
-								   return obj;
-							   }
-							   
-							   char is_input_port(object *obj) {
-								   return obj->type == INPUT_PORT;
-							   }
-							   
-							   object *make_output_port(FILE *stream) {
-								   object *obj;
-								   
-								   obj = alloc_object();
-								   obj->type = OUTPUT_PORT;
-								   obj->data.output_port.stream = stream;
-								   return obj;
-							   }
-							   
-							   char is_output_port(object *obj) {
-								   return obj->type == OUTPUT_PORT;
-							   }
-							   
-							   char is_eof_object(object *obj) {
-								   return obj == eof_object;
-							   }
-							   
+	obj = alloc_object();
+	obj->type = COMPOUND_PROC;
+	obj->data.compound_proc.parameters = parameters;
+	obj->data.compound_proc.body = body;
+	obj->data.compound_proc.env = env;
+	return obj;
+}
+   
+char is_compound_proc(object_t *obj) {
+	return obj->type == COMPOUND_PROC;
+}
+   
+object_t *make_input_port(FILE *stream) {
+	object_t *obj;
+   
+	obj = alloc_object();
+	obj->type = INPUT_PORT;
+	obj->data.input_port.stream = stream;
+	return obj;
+}
+
+char is_input_port(object_t *obj) {
+	return obj->type == INPUT_PORT;
+}
+   
+object_t *make_output_port(FILE *stream) {
+	object_t *obj;
+   
+	obj = alloc_object();
+	obj->type = OUTPUT_PORT;
+	obj->data.output_port.stream = stream;
+	return obj;
+}
+   
+char is_output_port(object_t *obj) {
+	return obj->type == OUTPUT_PORT;
+}
+   
+char is_eof_object(object_t *obj) {
+	return obj == eof_object;
+}
+  
 //////end
 object_t *enclosing_environment(object_t *env) {
 	return cdr(env);
