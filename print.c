@@ -41,13 +41,11 @@ void write(FILE *out, object_t *obj) {
 		case T_SYMBOL:
 			fprintf(out, "%s", obj->data.symbol.value);
 			break;
-		case T_NUMBER:
-			if(obj->data.number.type==T_INTEGER){
-				fprintf(out, "%ld", obj->data.number.d.fixnum.value);
-			}
-			if(obj->data.number.type==T_FLOAT){
-				fprintf(out, "%f", obj->data.number.d.dotted.value);
-			}
+		case T_INTEGER:
+			fprintf(out, "%ld", obj->data.fixnum.value);
+			break;
+		case T_FLOAT:
+			fprintf(out, "%f", obj->data.dotted.value);
 			break;
 		case T_CHARACTER:
 			c = obj->data.character.value;

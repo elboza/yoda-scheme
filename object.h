@@ -9,17 +9,12 @@ typedef struct m_object {
 		struct {
 			char value;
 		}boolean;
-		struct {
-			object_type type;
-			union{
-				struct{
-					long value;
-				}fixnum;
-				struct{
-					float value;
-				}dotted;
-			}d;
-		}number;
+		struct{
+			long value;
+		}fixnum;
+		struct{
+			float value;
+		}dotted;
 		struct {
 			char *value;
 		} string;
@@ -82,6 +77,7 @@ char is_boolean(object_t *obj);
 char is_false(object_t *obj);
 char is_true(object_t *obj);
 char is_bottom(object_t *obj);
+char is_number(object_t *obj);
 
 
 #endif

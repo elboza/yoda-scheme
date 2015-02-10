@@ -36,55 +36,37 @@ object_t *make_fixnum(long value) {
 	object_t *obj;
 	
 	obj = alloc_object();
-	obj->type = T_NUMBER;
-	obj->data.number.type=T_INTEGER;
-	obj->data.number.d.fixnum.value = value;
+	obj->type = T_INTEGER;
+	obj->data.fixnum.value = value;
 	return obj;
 }
 
 char is_fixnum(object_t *obj) {
-	if(obj->type==T_NUMBER){
-		return obj->data.number.type == T_INTEGER;
-	}
-	else{
-		return 0;
-	}
+	return obj->type==T_INTEGER;
 }
 object_t *make_integer(long value) {
 	object_t *obj;
 	
 	obj = alloc_object();
-	obj->type = T_NUMBER;
-	obj->data.number.type=T_INTEGER;
-	obj->data.number.d.fixnum.value = value;
+	obj->type = T_INTEGER;
+	obj->data.fixnum.value = value;
 	return obj;
 }
 
 char is_integer(object_t *obj) {
-	if(obj->type==T_NUMBER){
-		return obj->data.number.type == T_INTEGER;
-	}
-	else{
-		return 0;
-	}
+	return obj->type==T_INTEGER;
 }
 object_t *make_float(long value) {
 	object_t *obj;
 	
 	obj = alloc_object();
-	obj->type = T_NUMBER;
-	obj->data.number.type=T_FLOAT;
-	obj->data.number.d.dotted.value = value;
+	obj->type = T_FLOAT;
+	obj->data.dotted.value = value;
 	return obj;
 }
 
 char is_float(object_t *obj) {
-	if(obj->type==T_NUMBER){
-		return obj->data.number.type == T_FLOAT;
-	}
-	else{
-		return 0;
-	}
+	return(obj->type==T_FLOAT);
 }
 object_t *make_character(char value) {
 	object_t *obj;
@@ -168,10 +150,15 @@ object_t *is_boolean_proc(object_t *arguments) {
 object_t *is_symbol_proc(object_t *arguments) {
 	return is_symbol(car(arguments)) ? true : false;
 }
-	
-//TODO number / integer / float
+
 object_t *is_integer_proc(object_t *arguments) {
 	return is_fixnum(car(arguments)) ? true : false;
+}
+object_t *is_float_proc(object_t *arguments) {
+	return is_float(car(arguments)) ? true : false;
+}
+object_t *is_number_proc(object_t *arguments) {
+	return is_number(car(arguments)) ? true : false;
 }
 
 object_t *is_char_proc(object_t *arguments) {
@@ -196,26 +183,41 @@ object_t *is_procedure_proc(object_t *arguments) {
 	false;
 }
 
-//TODO number / integer / float
 object_t *char_to_integer_proc(object_t *arguments) {
 	return make_fixnum((car(arguments))->data.character.value);
 }
-
-//TODO number / integer /float
+object_t *char_to_float_proc(object_t *arguments) {
+	return make_float((car(arguments))->data.character.value);
+}
+object_t *char_to_number_proc(object_t *arguments) {
+	return make_number((car(arguments))->data.character.value);
+}
 object_t *integer_to_char_proc(object_t *arguments) {
 	return make_character((car(arguments))->data.fixnum.value);
 }
-
-//TODO number / integer / float
+object_t *float_to_char_proc(object_t *arguments) {
+	return make_character((car(arguments))->data.dotted.value);
+}
+object_t *number_to_char_proc(object_t *arguments) {
+	if(is_float(car(arguments))){
+		return float_to_char_proc(arguments);
+	}
+	return integer_to_char_proc(arguments);
+}
 object_t *number_to_string_proc(object_t *arguments) {
 	char buffer[100];
-	
-	sprintf(buffer, "%ld", (car(arguments))->data.fixnum.value);
+	if(is_float(car(arguments))){
+		sprintf(buffer, "%ld", (car(arguments))->data.dotted.value);
+	}
+	else{
+		sprintf(buffer, "%ld", (car(arguments))->data.fixnum.value);
+	}
 	return make_string(buffer);
 }
-
-//TODO number / integer / float
 object_t *string_to_number_proc(object_t *arguments) {
+	if(is_float(car(arguments))){
+		return make_float(atof((car(arguments))->data.string.value));
+	}
 	return make_fixnum(atoi((car(arguments))->data.string.value));
 }
 
@@ -226,48 +228,113 @@ object_t *symbol_to_string_proc(object_t *arguments) {
 object_t *string_to_symbol_proc(object_t *arguments) {
 	return make_symbol((car(argument))->data.string.value);
 }
-
-//TODO number / integer /float (+ 1 2 3 4)
-object_t *add_proc(object_t *arguments) {
-	long result = 0;
-	
-	while (!is_the_empty_list(arguments)) {
-		result += (car(arguments))->data.fixnum.value;
-		arguments = cdr(arguments);
+char are_number_args(object_t *arguments){
+	object_t *ptr;
+	int argno=1;
+	ptr=arguments;
+	while(!is_empty_list(ptr)){
+		if(ptr->type!=T_INTEGER || ptr->type!= T_FLOAT) return argno;
+		ptr=cdr(ptr);
+		argno++;
 	}
-	return make_fixnum(result);
+	return 0;
+}
+char are_float_args(object_t *arguments){
+	object_t *ptr;
+	int argno=1;
+	ptr=arguments;
+	while(!is_empty_list(ptr)){
+		if(ptr->type!= T_FLOAT) return argno;
+		ptr=cdr(ptr);
+		argno++;
+	}
+	return 0;
 }
 
-//TODO number / integer /float (- 1 2 3 4)
+object_t *add_proc(object_t *arguments) {
+	long result = 0;
+	float fresult=0;
+	
+	if(are_float_args(arguments)){
+		while (!is_the_empty_list(arguments)) {
+			if(is_float(car(arguments))){
+				fresult += (car(arguments))->data.dotted.value;
+			}
+			else{
+				fresult += (float)(car(arguments))->data.fixnum.value;
+			}
+			arguments = cdr(arguments);
+		}
+		return make_float(fresult);
+	}
+	else{
+		while (!is_the_empty_list(arguments)) {
+			result += (car(arguments))->data.fixnum.value;
+			arguments = cdr(arguments);
+		}
+		return make_fixnum(result);
+	}
+}
+
 object_t *sub_proc(object_t *arguments) {
 	long result;
+	float fresult=0;
 	
-	result = (car(arguments))->data.fixnum.value;
-	while (!is_the_empty_list(arguments = cdr(arguments))) {
-		result -= (car(arguments))->data.fixnum.value;
+	if(are_float_args(arguments)){
+		while (!is_the_empty_list(arguments)) {
+			if(is_float(car(arguments))){
+				fresult -= (car(arguments))->data.dotted.value;
+			}
+			else{
+				fresult -= (float)(car(arguments))->data.fixnum.value;
+			}
+			arguments = cdr(arguments);
+		}
+		return make_float(fresult);
 	}
-	return make_fixnum(result);
+	else{
+		while (!is_the_empty_list(arguments)) {
+			result -= (car(arguments))->data.fixnum.value;
+			arguments = cdr(arguments);
+		}
+		return make_fixnum(result);
+	}
 }
 
 //TODO number / integer /float (* 1 2 3 4)
 object_t *mul_proc(object_t *arguments) {
 	long result = 1;
+	float fresult=1;
 	
-	while (!is_the_empty_list(arguments)) {
-		result *= (car(arguments))->data.fixnum.value;
-		arguments = cdr(arguments);
+	if(are_float_args(arguments)){
+		while (!is_the_empty_list(arguments)) {
+			if(is_float(car(arguments))){
+				fresult *= (car(arguments))->data.dotted.value;
+			}
+			else{
+				fresult *= (float)(car(arguments))->data.fixnum.value;
+			}
+			arguments = cdr(arguments);
+		}
+		return make_float(fresult);
 	}
-	return make_fixnum(result);
+	else{
+		while (!is_the_empty_list(arguments)) {
+			result *= (car(arguments))->data.fixnum.value;
+			arguments = cdr(arguments);
+		}
+		return make_fixnum(result);
+	}
 }
 
-//TODO number / integer /float (div 1 2)
+//TODO number / integer /float (div 1 2) ????
 object_t *quotient_proc(object_t *arguments) {
 	return make_fixnum(
 		((car(arguments) )->data.fixnum.value)/
 		((cadr(arguments))->data.fixnum.value));
 }
 
-//TODO number / integer /float (reminder 1 2 3 4)
+//TODO number / integer /float (reminder 1 2 3 4) ????
 object_t *remainder_proc(object_t *arguments) {
 	return make_fixnum(
 		((car(arguments) )->data.fixnum.value)%

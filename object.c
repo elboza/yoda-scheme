@@ -30,3 +30,6 @@ char is_true(object_t *obj) {
 char is_bottom(object_t *obj){
 	return obj->type==T_BOTTOM;
 }
+char is_number(object_t *obj){
+	return (obj->type==T_INTEGER || obj->type==T_FLOAT);
+}
