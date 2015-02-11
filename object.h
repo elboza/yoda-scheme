@@ -3,7 +3,7 @@
 
 typedef enum {T_NONE, T_BOTTOM, T_EMPTY_LIST, T_ATOM, T_SYMBOL, T_STRING, T_NUMBER, T_INTEGER, T_FLOAT, T_PAIR, T_PRIMITIVE_PROC, T_COMPOUND_PROC, T_LAMBDA, T_DEFINE, T_CHARACTER, T_BOOLEAN, T_INPUT_PORT, T_OUTPUT_PORT, T_EOF_OBJECT, T_WARN_MSG } object_type;
 
-typedef struct m_object {
+typedef struct object_t {
 	object_type type;
 	union{
 		struct {
@@ -25,16 +25,16 @@ typedef struct m_object {
 			char value;
 		}character;
 		struct {
-			struct object *(*fn)(struct object *arguments);
+			struct object_t *(*fn)(struct object_t *arguments);
 		}primitive_proc;
 		struct {
-			struct object *parameters;
-			struct object *body;
-			struct object *env;
+			struct object_t *parameters;
+			struct object_t *body;
+			struct object_t *env;
 		}compound_proc;
 		struct {
-			struct m_object *car;
-			struct m_object *cdr;
+			struct object_t *car;
+			struct object_t *cdr;
 		}pair;
 		struct {
 			FILE *stream;

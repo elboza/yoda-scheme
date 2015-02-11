@@ -2,7 +2,11 @@
 #include<stdio.h>
 #include<string.h>
 #include "object.h"
+#include "stream.h"
+#include "env.h"
 #include "eval.h"
+#include "print.h"
+
 
 object_t *make_symbol(char *value) {
 	object_t *obj;
@@ -56,7 +60,7 @@ object_t *make_integer(long value) {
 char is_integer(object_t *obj) {
 	return obj->type==T_INTEGER;
 }
-object_t *make_float(long value) {
+object_t *make_float(float value) {
 	object_t *obj;
 	
 	obj = alloc_object();
@@ -125,8 +129,8 @@ object_t *cdr(object_t *pair) {
 void set_cdr(object_t *obj, object_t *value) {
 	obj->data.pair.cdr = value;
 }
-//////init
-object_t *make_primitive_proc(object_t *(*fn)(struct m_object *arguments)) {
+
+object_t *make_primitive_proc(object_t *(*fn)(struct object_t *arguments)) {
 	object_t *obj;
 	
 	obj = alloc_object();
@@ -190,7 +194,7 @@ object_t *char_to_float_proc(object_t *arguments) {
 	return make_float((car(arguments))->data.character.value);
 }
 object_t *char_to_number_proc(object_t *arguments) {
-	return make_number((car(arguments))->data.character.value);
+	return make_fixnum((car(arguments))->data.character.value);
 }
 object_t *integer_to_char_proc(object_t *arguments) {
 	return make_character((car(arguments))->data.fixnum.value);
@@ -207,7 +211,7 @@ object_t *number_to_char_proc(object_t *arguments) {
 object_t *number_to_string_proc(object_t *arguments) {
 	char buffer[100];
 	if(is_float(car(arguments))){
-		sprintf(buffer, "%ld", (car(arguments))->data.dotted.value);
+		sprintf(buffer, "%f", (car(arguments))->data.dotted.value);
 	}
 	else{
 		sprintf(buffer, "%ld", (car(arguments))->data.fixnum.value);
@@ -226,13 +230,13 @@ object_t *symbol_to_string_proc(object_t *arguments) {
 }
 
 object_t *string_to_symbol_proc(object_t *arguments) {
-	return make_symbol((car(argument))->data.string.value);
+	return make_symbol((car(arguments))->data.string.value);
 }
 char are_number_args(object_t *arguments){
 	object_t *ptr;
 	int argno=1;
 	ptr=arguments;
-	while(!is_empty_list(ptr)){
+	while(!is_the_empty_list(ptr)){
 		if(ptr->type!=T_INTEGER || ptr->type!= T_FLOAT) return argno;
 		ptr=cdr(ptr);
 		argno++;
@@ -243,7 +247,7 @@ char are_float_args(object_t *arguments){
 	object_t *ptr;
 	int argno=1;
 	ptr=arguments;
-	while(!is_empty_list(ptr)){
+	while(!is_the_empty_list(ptr)){
 		if(ptr->type!= T_FLOAT) return argno;
 		ptr=cdr(ptr);
 		argno++;
@@ -301,7 +305,6 @@ object_t *sub_proc(object_t *arguments) {
 	}
 }
 
-//TODO number / integer /float (* 1 2 3 4)
 object_t *mul_proc(object_t *arguments) {
 	long result = 1;
 	float fresult=1;
@@ -327,67 +330,141 @@ object_t *mul_proc(object_t *arguments) {
 	}
 }
 
-//TODO number / integer /float (div 1 2) ????
 object_t *quotient_proc(object_t *arguments) {
-	return make_fixnum(
-		((car(arguments) )->data.fixnum.value)/
-		((cadr(arguments))->data.fixnum.value));
+	float f1,f2;
+	if(are_float_args(arguments)){
+		if(is_float(car(arguments))) {f1=((car(arguments))->data.dotted.value);} else {f1=(float)((car(arguments))->data.fixnum.value);}
+		if(is_float(cadr(arguments))) {f2=((car(arguments))->data.dotted.value);} else {f2=(float)((car(arguments))->data.fixnum.value);}
+		return make_float(
+			f1/
+			f2);
+	}
+	else{
+		return make_fixnum(
+			((car(arguments) )->data.fixnum.value)/
+			((cadr(arguments))->data.fixnum.value));
+	}
 }
 
-//TODO number / integer /float (reminder 1 2 3 4) ????
 object_t *remainder_proc(object_t *arguments) {
-	return make_fixnum(
-		((car(arguments) )->data.fixnum.value)%
-		((cadr(arguments))->data.fixnum.value));
+	float f1,f2;
+	if(are_float_args(arguments)){
+		if(is_float(car(arguments))) {f1=((car(arguments))->data.dotted.value);} else {f1=(float)((car(arguments))->data.fixnum.value);}
+		if(is_float(cadr(arguments))) {f2=((car(arguments))->data.dotted.value);} else {f2=(float)((car(arguments))->data.fixnum.value);}
+		return make_float(
+//			f1% // % don't get float operands
+			f2);
+	}
+	else{
+		return make_fixnum(
+			((car(arguments) )->data.fixnum.value)%
+			((cadr(arguments))->data.fixnum.value));
+	}
 }
 
-//TODO number / integer /float (=?)
 object_t *is_number_equal_proc(object_t *arguments) {
 	long value;
-	
-	value = (car(arguments))->data.fixnum.value;
-	while (!is_the_empty_list(arguments = cdr(arguments))) {
-		if (value != ((car(arguments))->data.fixnum.value)) {
-			return false;
+	float f1,f2;
+	if(are_float_args(arguments)){
+		if(is_float(car(arguments))) {f1=((car(arguments))->data.dotted.value);} else {f1=(float)((car(arguments))->data.fixnum.value);}
+		while (!is_the_empty_list(arguments = cdr(arguments))) {
+			if(is_float(car(arguments))){
+				f2=((car(arguments))->data.dotted.value);
+			}
+			else{
+				f2=(float)((car(arguments))->data.fixnum.value);
+			}
+			if (f1 != f2) {
+				return false;
+			}
 		}
+		return true;
 	}
-	return true;
+	else{
+		value = (car(arguments))->data.fixnum.value;
+		while (!is_the_empty_list(arguments = cdr(arguments))) {
+			if (value != ((car(arguments))->data.fixnum.value)) {
+				return false;
+			}
+		}
+		return true;
+	}
 }
 
-//TODO number / integer /float (< 1 2)
 object_t *is_less_than_proc(object_t *arguments) {
 	long previous;
 	long next;
+	float f1,f2;
 	
-	previous = (car(arguments))->data.fixnum.value;
-	while (!is_the_empty_list(arguments = cdr(arguments))) {
-		next = (car(arguments))->data.fixnum.value;
-		if (previous < next) {
-			previous = next;
+	if(are_float_args(arguments)){
+		if(is_float(car(arguments))) {f1=((car(arguments))->data.dotted.value);} else {f1=(float)((car(arguments))->data.fixnum.value);}
+		while (!is_the_empty_list(arguments = cdr(arguments))) {
+			if(is_float(car(arguments))){
+				f2=((car(arguments))->data.dotted.value);
+			}
+			else{
+				f2=(float)((car(arguments))->data.fixnum.value);
+			}
+			if (f1 < f2) {
+				f1=f2;
+			}
+			else{
+				return false;
+			}
 		}
-		else {
-			return false;
-		}
+		return true;
 	}
-	return true;
+	else{
+		previous = (car(arguments))->data.fixnum.value;
+		while (!is_the_empty_list(arguments = cdr(arguments))) {
+			next = (car(arguments))->data.fixnum.value;
+			if (previous < next) {
+				previous = next;
+			}
+			else {
+				return false;
+			}
+		}
+		return true;
+	}
 }
 
-//TODO number / integer /float (> 1 2)
 object_t *is_greater_than_proc(object_t *arguments) {
 	long previous;
 	long next;
+	float f1,f2;
 	
-	previous = (car(arguments))->data.fixnum.value;
-	while (!is_the_empty_list(arguments = cdr(arguments))) {
-		next = (car(arguments))->data.fixnum.value;
-		if (previous > next) {
-			previous = next;
+	if(are_float_args(arguments)){
+		if(is_float(car(arguments))) {f1=((car(arguments))->data.dotted.value);} else {f1=(float)((car(arguments))->data.fixnum.value);}
+		while (!is_the_empty_list(arguments = cdr(arguments))) {
+			if(is_float(car(arguments))){
+				f2=((car(arguments))->data.dotted.value);
+			}
+			else{
+				f2=(float)((car(arguments))->data.fixnum.value);
+			}
+			if (f1 > f2) {
+				f1=f2;
+			}
+			else{
+				return false;
+			}
 		}
-		else {
-			return false;
-		}
+		return true;
 	}
-	return true;
+	else{
+		previous = (car(arguments))->data.fixnum.value;
+		while (!is_the_empty_list(arguments = cdr(arguments))) {
+			next = (car(arguments))->data.fixnum.value;
+			if (previous > next) {
+				previous = next;
+			}
+			else {
+				return false;
+			}
+		}
+		return true;
+	}
 }
 
 object_t *cons_proc(object_t *arguments) {
@@ -407,7 +484,7 @@ object_t *set_car_proc(object_t *arguments) {
 	return ok_symbol;
 }
 
-object_t *set_cdr_proc(object_T *arguments) {
+object_t *set_cdr_proc(object_t *arguments) {
 	set_cdr(car(arguments), cadr(arguments));
 	return ok_symbol;
 }
@@ -416,10 +493,9 @@ object_t *list_proc(object_t *arguments) {
 	return arguments;
 }
 
-//TODO number / integer /float
 object_t *is_eq_proc(object_t *arguments) {
-	object *obj1;
-	object *obj2;
+	object_t *obj1;
+	object_t *obj2;
 	
 	obj1 = car(arguments);
 	obj2 = cadr(arguments);
@@ -428,17 +504,22 @@ object_t *is_eq_proc(object_t *arguments) {
 		return false;
 	}
 	switch (obj1->type) {
-		case FIXNUM:
+		case T_INTEGER:
 			return (obj1->data.fixnum.value == 
 			obj2->data.fixnum.value) ?
 			true : false;
 			break;
-		case CHARACTER:
+		case T_FLOAT:
+			return (obj1->data.dotted.value == 
+			obj2->data.dotted.value) ?
+			true : false;
+			break;
+		case T_CHARACTER:
 			return (obj1->data.character.value == 
 			obj2->data.character.value) ?
 			true : false;
 			break;
-		case STRING:
+		case T_STRING:
 			return (strcmp(obj1->data.string.value, 
 						   obj2->data.string.value) == 0) ?
 						   true : false;
@@ -474,21 +555,24 @@ object_t *eval_proc(object_t *arguments) {
 
 object_t *load_proc(object_t *arguments) {
 	char *filename;
-	FILE *in;
+	//FILE *in;
 	object_t *exp;
 	object_t *result;
+	stream_t stream;
 	
 	filename = car(arguments)->data.string.value;
-	in = fopen(filename, "r");
-	if (in == NULL) {
+	//in = fopen(filename, "r");
+	init_stream(&stream);
+	open_stream(&stream,filename,TSTREAM_FILE);
+	if (stream.fp == NULL) {
 		fprintf(stderr, "could not load file \"%s\"", filename);
 		//exit(1);
 		return bottom;
 	}
-	while ((exp = read(in)) != NULL) {
-		result = eval(exp, the_global_environment);
-	}
-	fclose(in);
+//	while ((exp = read(in)) != NULL) {
+///		result = eval(exp, the_global_environment);
+//	}
+	close_stream(&stream);
 	return result;
 }
 
@@ -525,11 +609,14 @@ object_t *is_input_port_proc(object_t *arguments) {
 object_t *read_proc(object_t *arguments) {
 	FILE *in;
 	object_t *result;
+	stream_t stream;
 	
+	//init_stream(&stream);
+	//open_stream(&stream,NULL,TSTREAM_STDIN);
 	in = is_the_empty_list(arguments) ?
 	stdin :
 	car(arguments)->data.input_port.stream;
-	result = read(in);
+//	result = read(in);
 	return (result == NULL) ? eof_object : result;
 }
 
@@ -551,7 +638,7 @@ object_t *peek_char_proc(object_t *arguments) {
 	in = is_the_empty_list(arguments) ?
 	stdin :
 	car(arguments)->data.input_port.stream;
-	result = peek(in);
+//	result = peek(in);
 	return (result == EOF) ? eof_object : make_character(result);
 }
 
@@ -590,7 +677,7 @@ object_t *is_output_port_proc(object_t *arguments) {
 }
 
 object_t *write_char_proc(object_t *arguments) {
-	object *character;
+	object_t *character;
 	FILE *out;
 	
 	character = car(arguments);
@@ -604,7 +691,7 @@ object_t *write_char_proc(object_t *arguments) {
 }
 
 object_t *write_proc(object_t *arguments) {
-	object *exp;
+	object_t *exp;
 	FILE *out;
 	
 	exp = car(arguments);
@@ -631,7 +718,7 @@ object_t *make_compound_proc(object_t *parameters, object_t *body, object_t *env
 	object_t *obj;
 	
 	obj = alloc_object();
-	obj->type = COMPOUND_PROC;
+	obj->type = T_COMPOUND_PROC;
 	obj->data.compound_proc.parameters = parameters;
 	obj->data.compound_proc.body = body;
 	obj->data.compound_proc.env = env;
@@ -639,40 +726,39 @@ object_t *make_compound_proc(object_t *parameters, object_t *body, object_t *env
 }
    
 char is_compound_proc(object_t *obj) {
-	return obj->type == COMPOUND_PROC;
+	return obj->type == T_COMPOUND_PROC;
 }
    
 object_t *make_input_port(FILE *stream) {
 	object_t *obj;
    
 	obj = alloc_object();
-	obj->type = INPUT_PORT;
+	obj->type = T_INPUT_PORT;
 	obj->data.input_port.stream = stream;
 	return obj;
 }
 
 char is_input_port(object_t *obj) {
-	return obj->type == INPUT_PORT;
+	return obj->type == T_INPUT_PORT;
 }
    
 object_t *make_output_port(FILE *stream) {
 	object_t *obj;
    
 	obj = alloc_object();
-	obj->type = OUTPUT_PORT;
+	obj->type = T_OUTPUT_PORT;
 	obj->data.output_port.stream = stream;
 	return obj;
 }
    
 char is_output_port(object_t *obj) {
-	return obj->type == OUTPUT_PORT;
+	return obj->type == T_OUTPUT_PORT;
 }
    
 char is_eof_object(object_t *obj) {
 	return obj == eof_object;
 }
-  
-//////end
+
 object_t *enclosing_environment(object_t *env) {
 	return cdr(env);
 }
@@ -724,7 +810,7 @@ object_t *lookup_variable_value(object_t *var, object_t *env) {
 	return bottom;
 }
  
-void set_variable_value(objectt *var, object_t *val, object_t *env) {
+void set_variable_value(object_t *var, object_t *val, object_t *env) {
 	object_t *frame;
 	object_t *vars;
 	object_t *vals;
@@ -758,7 +844,7 @@ void define_variable(object_t *var, object_t *val, object_t *env) {
 
 	while (!is_the_empty_list(vars)) {
 		if (var == car(vars)) {
-			et_car(vals, val);
+			set_car(vals, val);
 			return;
 		}
 		vars = cdr(vars);
