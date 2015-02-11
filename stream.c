@@ -77,3 +77,9 @@ void stream_unget_ch(stream_t *s,char c){
 			break;
 	}
 }
+char stream_peek_ch(stream_t *s){
+	char c;
+	c=stream_get_ch(s);
+	stream_unget_ch(s,c);
+	return c;
+}

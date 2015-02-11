@@ -15,7 +15,7 @@ void open_stream(stream_t *s,char *p,stream_type t);
 void close_stream(stream_t *s);
 char stream_get_ch(stream_t *s);
 void stream_unget_ch(stream_t *s,char c);
-
+char stream_peek_ch(stream_t *s);
 
 
 #endif
