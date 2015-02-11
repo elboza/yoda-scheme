@@ -3,6 +3,7 @@
  * license: GPLv2
  */
 #include<stdlib.h>
+#include<stdio.h>
 #include<string.h>
 #include<stdio.h>
 #include<ctype.h>
@@ -14,9 +15,13 @@
 #include<readline/readline.h>
 #include<readline/history.h>
 #endif
-#include "stream.h"
-#include "repl.h"
 #include "object.h"
+#include "stream.h"
+#include "read.h"
+#include "env.h"
+#include "eval.h"
+#include "print.h"
+#include "repl.h"
 
 
 extern char *strtok_r(char *, const char *, char **);
@@ -75,7 +80,7 @@ void repl(stream_t *stream)
 	quit_shell=0;
 	int line_no=1;
 	//if(check_funny()) funny_shell_disclaimer(); else normal_shell_disclaimer();
-	//printf("entering shell-interactive mode...\n");
+	//printf("?!?entering shell-interactive mode...\n");
 	#ifdef HAVE_LIBREADLINE
 	rl_variable_bind("blink-match-paren","on");
 	#endif
@@ -105,12 +110,19 @@ void show_help(){
 void execute(stream_t *stream,char *s)
 {
 	char *ns=NULL;
+	object_t *exp;
+	
 	if(!s) return;
-	if((strcmp(s,":q"))==0) {quit_shell=1;}
-	if((strcmp(s,":h"))==0) {show_help();}
+	if((strcmp(s,":q"))==0) {quit_shell=1;return;}
+	if((strcmp(s,":h"))==0) {show_help();return;}
 	strtok_r(s," ",&ns);
 	//if((strcmp(s,":l"))==0){if(ns){run(trim(ns),given_env,ret,*reversefuck);}}
-	
+	printf("== %s\n",s);
 	//openstream and execute lisp prog.
-	
+	open_stream(stream,s,TSTREAM_STR);
+	while (!is_eof_object(exp = read(stream))) {
+//		exp = read(stream);
+		write(NULL, eval(exp, the_global_environment));
+	}
+	close_stream(stream);
 }

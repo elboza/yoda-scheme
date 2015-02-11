@@ -3,6 +3,7 @@
 #include<string.h>
 #include "object.h"
 #include "stream.h"
+#include "read.h"
 #include "env.h"
 #include "eval.h"
 #include "print.h"
@@ -569,9 +570,9 @@ object_t *load_proc(object_t *arguments) {
 		//exit(1);
 		return bottom;
 	}
-//	while ((exp = read(in)) != NULL) {
-///		result = eval(exp, the_global_environment);
-//	}
+	while ((exp = read(&stream)) != NULL) {
+		result = eval(exp, the_global_environment);
+	}
 	close_stream(&stream);
 	return result;
 }
@@ -607,16 +608,16 @@ object_t *is_input_port_proc(object_t *arguments) {
 }
 
 object_t *read_proc(object_t *arguments) {
-	FILE *in;
+	//FILE *in;
 	object_t *result;
 	stream_t stream;
 	
-	//init_stream(&stream);
-	//open_stream(&stream,NULL,TSTREAM_STDIN);
-	in = is_the_empty_list(arguments) ?
+	init_stream(&stream);
+	stream.fp = is_the_empty_list(arguments) ?
 	stdin :
 	car(arguments)->data.input_port.stream;
-//	result = read(in);
+	open_stream(&stream,NULL,TSTREAM_STDIN);
+	result = read(&stream);
 	return (result == NULL) ? eof_object : result;
 }
 
@@ -638,7 +639,7 @@ object_t *peek_char_proc(object_t *arguments) {
 	in = is_the_empty_list(arguments) ?
 	stdin :
 	car(arguments)->data.input_port.stream;
-//	result = peek(in);
+	result = peek_(in);
 	return (result == EOF) ? eof_object : make_character(result);
 }
 

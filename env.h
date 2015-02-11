@@ -9,6 +9,8 @@ object_t *make_integer(long value);
 char is_integer(object_t *obj);
 object_t *make_float(float value);
 char is_float(object_t *obj);
+object_t *make_character(char value);
+char is_character(object_t *obj);
 object_t *make_string(char *value);
 char is_string(object_t *obj);
 object_t *cons(object_t *car, object_t *cdr);

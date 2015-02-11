@@ -47,7 +47,7 @@ void close_stream(stream_t *s){
 	}
 	init_stream(s);
 }
-char stream_get_ch(stream_t *s){
+char stream_get_ch_(stream_t *s){
 	char c;
 	switch(s->type){
 		case TSTREAM_FILE:
@@ -55,7 +55,8 @@ char stream_get_ch(stream_t *s){
 			c=(char)fgetc(s->fp);
 			break;
 		case TSTREAM_STR:
-			c=*(++s->ptr);
+			if(s->ptr>=s->start+s->len) return EOF;
+			c=*(s->ptr++);
 			break;
 		default:
 			
@@ -70,7 +71,8 @@ void stream_unget_ch(stream_t *s,char c){
 			ungetc(c,s->fp);
 			break;
 		case TSTREAM_STR:
-			c=*(--s->ptr);
+			if(s->ptr<=s->start) return;
+			*(--s->ptr)=c;
 			break;
 		default:
 			
@@ -79,7 +81,7 @@ void stream_unget_ch(stream_t *s,char c){
 }
 char stream_peek_ch(stream_t *s){
 	char c;
-	c=stream_get_ch(s);
+	c=stream_get_ch_(s);
 	stream_unget_ch(s,c);
 	return c;
 }

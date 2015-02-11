@@ -9,7 +9,12 @@
 #include<stdarg.h>
 #include<getopt.h>
 #include "main.h"
+#include "object.h"
 #include "stream.h"
+#include "read.h"
+#include "env.h"
+#include "eval.h"
+#include "print.h"
 #include "repl.h"
 
 
@@ -112,9 +117,10 @@ int main(int argc,char **argv)
 {
 	struct m_action action;
 	stream_t stream;
+	object_t *exp;
 	init_stream(&stream);
 	parse_args(argc,argv,&action,&stream);
-	
+	init_env();
 	if(argc<2) usage_b();
 	if(optind<argc) {
 		if(action.file){
@@ -128,16 +134,29 @@ int main(int argc,char **argv)
 		printf("argument incongruence input prog. see scm -h\n");
 		reset_actions(&action);
 	}
+	
 	if(action.exec){
 		open_stream(&stream,stream.ptr,TSTREAM_STR);
+		while (!is_eof_object(exp = read(&stream))) {
+			//		exp = read(stream);
+			write(NULL, eval(exp, the_global_environment));
+		}
 	}
 	if(action.stdin){
 		open_stream(&stream,NULL,TSTREAM_STDIN);
+		while (!is_eof_object(exp = read(&stream))) {
+			//		exp = read(stream);
+			write(NULL, eval(exp, the_global_environment));
+		}
 	}
 	if(action.file)
 	{
 		printf("file: %s\n",stream.filename);
 		open_stream(&stream,stream.filename,TSTREAM_FILE);
+		while (!is_eof_object(exp = read(&stream))) {
+			//		exp = read(stream);
+			write(NULL, eval(exp, the_global_environment));
+		}
 	}
 	if(action.shell)
 	{
