@@ -48,6 +48,7 @@ void eat_expected_string(stream_t *stream, char *str) {
 	
 	while (*str != '\0') {
 		c = stream_get_ch_(stream);
+		if(c==EOF) return;
 		if (c != *str) {
 			fprintf(stderr, "unexpected character '%c'\n", c);
 			//exit(1);
@@ -69,6 +70,7 @@ object_t *read_character(stream_t *stream) {
 	int c;
 	
 	c = stream_get_ch_(stream);
+	if(c==EOF) return eof_object;
 	switch (c) {
 		case EOF:
 			fprintf(stderr, "incomplete character literal\n");
@@ -101,6 +103,7 @@ object_t *read_pair(stream_t *stream) {
 	eat_whitespace(stream);
 	
 	c = stream_get_ch_(stream);
+	if(c==EOF) {fprintf(stderr,"(?\? ...)\n");return eof_object;}
 	if (c == ')') { /* read the empty list */
 		return the_empty_list;
 	}
@@ -110,9 +113,11 @@ object_t *read_pair(stream_t *stream) {
 	
 	eat_whitespace(stream);
 	
-	c = stream_get_ch_(stream);    
+	c = stream_get_ch_(stream); 
+	if(c==EOF) {fprintf(stderr,"(_ ?\?)\n");return eof_object;}
 	if (c == '.') { /* read improper list */
 		c = stream_peek_ch(stream);
+		if(c==EOF) {fprintf(stderr,"(_ . ?\?)\n");return eof_object;}
 		if (!is_delimiter(c)) {
 			fprintf(stderr, "dot not followed by delimiter\n");
 			//exit(1);
@@ -121,6 +126,10 @@ object_t *read_pair(stream_t *stream) {
 		cdr_obj = read_sx(stream);
 		eat_whitespace(stream);
 		c = stream_get_ch_(stream);
+		if(c==EOF) {
+			fprintf(stderr,"missing )\n");
+			return eof_object;
+		}
 		if (c != ')') {
 			fprintf(stderr,"where was the trailing right paren?\n");
 			//exit(1);
@@ -140,15 +149,18 @@ object_t *read_sx(stream_t *stream) {
 	short sign = 1;
 	int i;
 	long num = 0;
+	float fnum=0;
 	#define BUFFER_MAX 1000
 	char buffer[BUFFER_MAX];
 	
 	eat_whitespace(stream);
 	
-	c = stream_get_ch_(stream);    
+	c = stream_get_ch_(stream);
+	if(c==EOF) return eof_object;
 	
 	if (c == '#') { /* read a boolean or character */
 		c = stream_get_ch_(stream);
+		if(c==EOF) return eof_object;
 		switch (c) {
 			case 't':
 				return true;
@@ -174,9 +186,19 @@ object_t *read_sx(stream_t *stream) {
 			num = (num * 10) + (c - '0');
 		}
 		num *= sign;
+		if(c=='.' && isdigit(stream_peek_ch(stream))){
+			// get float part...
+			int dd=1;
+			while (isdigit(c = stream_get_ch_(stream))) {
+				//printf("%f %d ",((float)(c-'0')/10),dd);
+				fnum +=  ((float)(c - '0')/(10^(dd++)));
+			}
+			fnum+= (float)num;
+			printf("fnum: %f\n",fnum);
+		}
 		if (is_delimiter(c)) {
 			stream_unget_ch(stream,c);
-			return make_fixnum(num);
+			return (fnum>0)? make_float(fnum):make_fixnum(num);
 		}
 		else {
 			fprintf(stderr, "number not followed by delimiter\n");
@@ -208,6 +230,7 @@ object_t *read_sx(stream_t *stream) {
 					return make_symbol(buffer);
 				}
 				else {
+					if(c==EOF) fprintf(stderr,"EOF\n");
 					fprintf(stderr, "symbol not followed by delimiter. "
 					"Found '%c'\n", c);
 					//exit(1);
@@ -250,6 +273,7 @@ object_t *read_sx(stream_t *stream) {
 			return cons(quote_symbol, cons(read_sx(stream), the_empty_list));
 		}
 		else if (c == EOF) {
+			fprintf(stderr,"EOF\n");
 			return eof_object;
 		}
 		else {

@@ -102,7 +102,7 @@ void repl(stream_t *stream)
 	}
 }
 void show_help(){
-	printf("scheme interpreter, by Fernando Iazeolla 2015(c)\n");
+	printf("%s interpreter, by Fernando Iazeolla 2015(c)\n",PROGNAME);
 	printf(":q                ~ exit interpreter\n");
 	printf(":h                ~ this help\n");
 	printf(":l file           ~ load file\n");

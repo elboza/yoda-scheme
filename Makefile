@@ -12,8 +12,8 @@ endif
 LIBS= -lm $(LIBREADLINE) 
 OBJECTS= main.o env.o repl.o eval.o object.o print.o read.o stream.o
 DIST_SOURCES= *.c *.h Makefile README.md *.man
-TARGET=scm
-PNAME=scheme
+TARGET=yscm
+PNAME=Yoda-Scheme
 VERSION=`cat main.h|sed -e 's/\/\/.*//'|grep VERSION |cut -d '"' -f2`
 BINDIR=/usr/local/bin
 MANDIR=/usr/local/share/man/man1
@@ -67,7 +67,7 @@ dist:
 	rmdir ${DIST_DIR}
 
 help:
-	@ echo "scheme Makefile"
+	@ echo "Yoda-Scheme Makefile"
 	@ echo "The following targets are available"
 	@ echo "make            ~ build scheme executable"
 	@ echo "make help       ~ print this message"

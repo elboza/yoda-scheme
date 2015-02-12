@@ -12,6 +12,8 @@
 //#undef HAVE_LIBREADLINE
 #define FILENAME_LEN 255
 #define VERSION "0.1"
+#define PROGNAME "Yoda-Scheme"
+#define TARGETNAME "yscm"
 
 void log_d(char *s);
 void die(char *s);

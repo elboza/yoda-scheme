@@ -41,9 +41,9 @@ void reset_actions(struct m_action *action){
 }
 void usage()
 {
-	printf("scheme v%s\n",VERSION);
+	printf("%s v%s\n",PROGNAME,VERSION);
 	printf("\nUSAGE: ");
-	printf("scm [options] [file]\n");
+	printf("%s [options] [file]\n",TARGETNAME);
 	printf("valid options:\n");
 	printf("-i              --shell         interactive (shell mode)\n");
 	printf("-h              --help          show this help\n");
@@ -55,7 +55,7 @@ void usage()
 }
 void usage_b()
 {
-	printf("scheme v%s (c) Fernando Iazeolla \n",VERSION);
+	printf("%s v%s (c) Fernando Iazeolla \n",PROGNAME,VERSION);
 	printf("for help type: scm --help\n");
 }
 void parse_args(int argc,char **argv,struct m_action *action,stream_t *stream)
