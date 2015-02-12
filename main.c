@@ -137,25 +137,25 @@ int main(int argc,char **argv)
 	
 	if(action.exec){
 		open_stream(&stream,stream.ptr,TSTREAM_STR);
-		while (!is_eof_object(exp = read(&stream))) {
+		while (!is_eof_object(exp = read_sx(&stream))) {
 			//		exp = read(stream);
-			write(NULL, eval(exp, the_global_environment));
+			write_sx(NULL, eval(exp, the_global_environment));
 		}
 	}
 	if(action.stdin){
 		open_stream(&stream,NULL,TSTREAM_STDIN);
-		while (!is_eof_object(exp = read(&stream))) {
+		while (!is_eof_object(exp = read_sx(&stream))) {
 			//		exp = read(stream);
-			write(NULL, eval(exp, the_global_environment));
+			write_sx(NULL, eval(exp, the_global_environment));
 		}
 	}
 	if(action.file)
 	{
 		printf("file: %s\n",stream.filename);
 		open_stream(&stream,stream.filename,TSTREAM_FILE);
-		while (!is_eof_object(exp = read(&stream))) {
+		while (!is_eof_object(exp = read_sx(&stream))) {
 			//		exp = read(stream);
-			write(NULL, eval(exp, the_global_environment));
+			write_sx(NULL, eval(exp, the_global_environment));
 		}
 	}
 	if(action.shell)

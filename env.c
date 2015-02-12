@@ -249,11 +249,11 @@ char are_float_args(object_t *arguments){
 	int argno=1;
 	ptr=arguments;
 	while(!is_the_empty_list(ptr)){
-		if(ptr->type!= T_FLOAT) return argno;
+		if(ptr->type!= T_FLOAT) return 0;
 		ptr=cdr(ptr);
 		argno++;
 	}
-	return 0;
+	return 1;
 }
 
 object_t *add_proc(object_t *arguments) {
@@ -286,21 +286,28 @@ object_t *sub_proc(object_t *arguments) {
 	float fresult=0;
 	
 	if(are_float_args(arguments)){
-		while (!is_the_empty_list(arguments)) {
+		if(is_float(car(arguments))){
+			fresult = (car(arguments))->data.dotted.value;
+		}
+		else{
+			fresult = (float)(car(arguments))->data.fixnum.value;
+		}
+		while (!is_the_empty_list(arguments = cdr(arguments))) {
 			if(is_float(car(arguments))){
 				fresult -= (car(arguments))->data.dotted.value;
 			}
 			else{
 				fresult -= (float)(car(arguments))->data.fixnum.value;
 			}
-			arguments = cdr(arguments);
+			//arguments = cdr(arguments);
 		}
 		return make_float(fresult);
 	}
 	else{
-		while (!is_the_empty_list(arguments)) {
+		result = (car(arguments))->data.fixnum.value;
+		while (!is_the_empty_list(arguments = cdr(arguments))) {
 			result -= (car(arguments))->data.fixnum.value;
-			arguments = cdr(arguments);
+			//arguments = cdr(arguments);
 		}
 		return make_fixnum(result);
 	}
@@ -570,7 +577,7 @@ object_t *load_proc(object_t *arguments) {
 		//exit(1);
 		return bottom;
 	}
-	while ((exp = read(&stream)) != NULL) {
+	while ((exp = read_sx(&stream)) != NULL) {
 		result = eval(exp, the_global_environment);
 	}
 	close_stream(&stream);
@@ -617,7 +624,7 @@ object_t *read_proc(object_t *arguments) {
 	stdin :
 	car(arguments)->data.input_port.stream;
 	open_stream(&stream,NULL,TSTREAM_STDIN);
-	result = read(&stream);
+	result = read_sx(&stream);
 	return (result == NULL) ? eof_object : result;
 }
 
@@ -700,14 +707,14 @@ object_t *write_proc(object_t *arguments) {
 	out = is_the_empty_list(arguments) ?
 	stdout :
 	car(arguments)->data.output_port.stream;
-	write(out, exp);
+	write_sx(out, exp);
 	fflush(out);
 	return ok_symbol;
 }
 
 object_t *error_proc(object_t *arguments) {
 	while (!is_the_empty_list(arguments)) {
-		write(stderr, car(arguments));
+		write_sx(stderr, car(arguments));
 		fprintf(stderr, " ");
 		arguments = cdr(arguments);
 	};

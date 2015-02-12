@@ -106,7 +106,7 @@ object_t *read_pair(stream_t *stream) {
 	}
 	stream_unget_ch(stream,c);
 	
-	car_obj = read(stream);
+	car_obj = read_sx(stream);
 	
 	eat_whitespace(stream);
 	
@@ -118,7 +118,7 @@ object_t *read_pair(stream_t *stream) {
 			//exit(1);
 			return bottom;
 		}
-		cdr_obj = read(stream);
+		cdr_obj = read_sx(stream);
 		eat_whitespace(stream);
 		c = stream_get_ch_(stream);
 		if (c != ')') {
@@ -135,7 +135,7 @@ object_t *read_pair(stream_t *stream) {
 	}
 }
 
-object_t *read(stream_t *stream) {
+object_t *read_sx(stream_t *stream) {
 	int c;
 	short sign = 1;
 	int i;
@@ -247,7 +247,7 @@ object_t *read(stream_t *stream) {
 			return read_pair(stream);
 		}
 		else if (c == '\'') { /* read quoted expression */
-			return cons(quote_symbol, cons(read(stream), the_empty_list));
+			return cons(quote_symbol, cons(read_sx(stream), the_empty_list));
 		}
 		else if (c == EOF) {
 			return eof_object;

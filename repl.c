@@ -86,7 +86,7 @@ void repl(stream_t *stream)
 	#endif
 	while(!quit_shell)
 	{
-		sprintf(prompt,"scm~%d~ ",line_no++);
+		sprintf(prompt,"\nscm~%d~ ",line_no++);
 		#ifdef HAVE_LIBREADLINE
 		cmd=rl_gets(prompt);
 		#else
@@ -109,20 +109,20 @@ void show_help(){
 }
 void execute(stream_t *stream,char *s)
 {
-	char *ns=NULL;
+	//char *ns=NULL;
 	object_t *exp;
 	
 	if(!s) return;
 	if((strcmp(s,":q"))==0) {quit_shell=1;return;}
 	if((strcmp(s,":h"))==0) {show_help();return;}
-	strtok_r(s," ",&ns);
+	//strtok_r(s," ",&ns);
 	//if((strcmp(s,":l"))==0){if(ns){run(trim(ns),given_env,ret,*reversefuck);}}
-	printf("== %s\n",s);
+	//printf("== %s\n",s);
 	//openstream and execute lisp prog.
 	open_stream(stream,s,TSTREAM_STR);
-	while (!is_eof_object(exp = read(stream))) {
+	while (!is_eof_object(exp = read_sx(stream))) {
 //		exp = read(stream);
-		write(NULL, eval(exp, the_global_environment));
+		write_sx(NULL, eval(exp, the_global_environment));
 	}
 	close_stream(stream);
 }

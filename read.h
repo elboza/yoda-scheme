@@ -9,6 +9,6 @@ void eat_expected_string(stream_t *stream, char *str);
 void peek_expected_delimiter(stream_t *stream);
 object_t *read_character(stream_t *stream);
 object_t *read_pair(stream_t *stream);
-object_t *read(stream_t *stream);
+object_t *read_sx(stream_t *stream);
 
 #endif

@@ -9,7 +9,7 @@ void write_pair(FILE *out, object_t *pair) {
 	
 	car_obj = car(pair);
 	cdr_obj = cdr(pair);
-	write(out, car_obj);
+	write_sx(out, car_obj);
 	if (cdr_obj->type == T_PAIR) {
 		fprintf(out, " ");
 		write_pair(out, cdr_obj);
@@ -19,11 +19,11 @@ void write_pair(FILE *out, object_t *pair) {
 	}
 	else {
 		fprintf(out, " . ");
-		write(out, cdr_obj);
+		write_sx(out, cdr_obj);
 	}
 }
 
-void write(FILE *out, object_t *obj) {
+void write_sx(FILE *out, object_t *obj) {
 	char c;
 	char *str;
 	
