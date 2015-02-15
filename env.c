@@ -249,11 +249,11 @@ char are_float_args(object_t *arguments){
 	int argno=1;
 	ptr=arguments;
 	while(!is_the_empty_list(ptr)){
-		if(ptr->type!= T_FLOAT) return 0;
+		if(car(ptr)->type== T_FLOAT) return 1;
 		ptr=cdr(ptr);
 		argno++;
 	}
-	return 1;
+	return 0;
 }
 
 object_t *add_proc(object_t *arguments) {
@@ -339,13 +339,15 @@ object_t *mul_proc(object_t *arguments) {
 }
 
 object_t *quotient_proc(object_t *arguments) {
-	float f1,f2;
+	//float f1,f2;
 	if(are_float_args(arguments)){
-		if(is_float(car(arguments))) {f1=((car(arguments))->data.dotted.value);} else {f1=(float)((car(arguments))->data.fixnum.value);}
-		if(is_float(cadr(arguments))) {f2=((car(arguments))->data.dotted.value);} else {f2=(float)((car(arguments))->data.fixnum.value);}
-		return make_float(
-			f1/
-			f2);
+// 		if(is_float(car(arguments))) {f1=((car(arguments))->data.dotted.value);} else {f1=(float)((car(arguments))->data.fixnum.value);}
+// 		if(is_float(cadr(arguments))) {f2=((car(arguments))->data.dotted.value);} else {f2=(float)((car(arguments))->data.fixnum.value);}
+// 		return make_float(
+// 			f1/
+// 			f2);
+		fprintf(stderr,"float arguments not allowed.\n");
+		return bottom;
 	}
 	else{
 		return make_fixnum(
@@ -355,13 +357,15 @@ object_t *quotient_proc(object_t *arguments) {
 }
 
 object_t *remainder_proc(object_t *arguments) {
-	float f1,f2;
+	//float f1,f2;
 	if(are_float_args(arguments)){
-		if(is_float(car(arguments))) {f1=((car(arguments))->data.dotted.value);} else {f1=(float)((car(arguments))->data.fixnum.value);}
-		if(is_float(cadr(arguments))) {f2=((car(arguments))->data.dotted.value);} else {f2=(float)((car(arguments))->data.fixnum.value);}
-		return make_float(
-//			f1% // % don't get float operands
-			f2);
+// 		if(is_float(car(arguments))) {f1=((car(arguments))->data.dotted.value);} else {f1=(float)((car(arguments))->data.fixnum.value);}
+// 		if(is_float(cadr(arguments))) {f2=((car(arguments))->data.dotted.value);} else {f2=(float)((car(arguments))->data.fixnum.value);}
+// 		return make_float(
+// //			f1% // % don't get float operands
+// 			f2);
+		fprintf(stderr,"float arguments not allowed.\n");
+		return bottom;
 	}
 	else{
 		return make_fixnum(

@@ -45,7 +45,7 @@ void write_sx(FILE *out, object_t *obj) {
 			fprintf(out, "%ld", obj->data.fixnum.value);
 			break;
 		case T_FLOAT:
-			fprintf(out, "%f", obj->data.dotted.value);
+			fprintf(out, "%g", obj->data.dotted.value);
 			break;
 		case T_CHARACTER:
 			c = obj->data.character.value;

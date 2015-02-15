@@ -56,7 +56,7 @@ void usage()
 void usage_b()
 {
 	printf("%s v%s (c) Fernando Iazeolla \n",PROGNAME,VERSION);
-	printf("for help type: scm --help\n");
+	printf("for help type: %s --help\n",TARGETNAME);
 }
 void parse_args(int argc,char **argv,struct m_action *action,stream_t *stream)
 {
@@ -110,6 +110,7 @@ void parse_args(int argc,char **argv,struct m_action *action,stream_t *stream)
 }
 void shell(stream_t *s){
 	printf("entering interactive-shell mode ...\n");
+	printf("type :h for help.\n");
 	repl(s);
 }
 
@@ -124,14 +125,14 @@ int main(int argc,char **argv)
 	if(argc<2) usage_b();
 	if(optind<argc) {
 		if(action.file){
-			printf("argument incongruence input prog. see scm -h\n");
+			printf("argument incongruence input prog. see %s -h\n",TARGETNAME);
 			reset_actions(&action);
 		}
 		stream.filename=argv[optind];
 		action.file=1;
 	}
 	if(action.stdin+action.file+action.shell+action.exec>1){
-		printf("argument incongruence input prog. see scm -h\n");
+		printf("argument incongruence input prog. see %s -h\n",TARGETNAME);
 		reset_actions(&action);
 	}
 	

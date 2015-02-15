@@ -86,7 +86,7 @@ void repl(stream_t *stream)
 	#endif
 	while(!quit_shell)
 	{
-		sprintf(prompt,"\nscm~%d~ ",line_no++);
+		sprintf(prompt,"\nyscm~%d~ ",line_no++);
 		#ifdef HAVE_LIBREADLINE
 		cmd=rl_gets(prompt);
 		#else
@@ -105,7 +105,7 @@ void show_help(){
 	printf("%s interpreter, by Fernando Iazeolla 2015(c)\n",PROGNAME);
 	printf(":q                ~ exit interpreter\n");
 	printf(":h                ~ this help\n");
-	printf(":l file           ~ load file\n");
+	//printf(":l file           ~ load file\n");
 }
 void execute(stream_t *stream,char *s)
 {
