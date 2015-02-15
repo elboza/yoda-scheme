@@ -37,7 +37,7 @@ void open_stream(stream_t *s,char *p,stream_type t){
 			init_stream(s);
 			break;
 	}
-	
+
 }
 void close_stream(stream_t *s){
 	if(s->type==TSTREAM_FILE) {
@@ -59,7 +59,7 @@ char stream_get_ch_(stream_t *s){
 			c=*(s->ptr++);
 			break;
 		default:
-			
+			c='\0';
 			break;
 	}
 	return c;
@@ -75,7 +75,7 @@ void stream_unget_ch(stream_t *s,char c){
 			*(--s->ptr)=c;
 			break;
 		default:
-			
+
 			break;
 	}
 }

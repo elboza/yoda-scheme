@@ -21,7 +21,7 @@ char is_initial(int c) {
 
 int peek_(FILE *in) {
 	int c;
-	
+
 	c = getc(in);
 	ungetc(c, in);
 	return c;
@@ -29,7 +29,7 @@ int peek_(FILE *in) {
 
 void eat_whitespace(stream_t *stream) {
 	int c;
-	
+
 	while ((c = stream_get_ch_(stream)) != EOF) {
 		if (isspace(c)) {
 			continue;
@@ -45,7 +45,7 @@ void eat_whitespace(stream_t *stream) {
 
 void eat_expected_string(stream_t *stream, char *str) {
 	int c;
-	
+
 	while (*str != '\0') {
 		c = stream_get_ch_(stream);
 		if(c==EOF) return;
@@ -68,7 +68,7 @@ void peek_expected_delimiter(stream_t *stream) {
 
 object_t *read_character(stream_t *stream) {
 	int c;
-	
+
 	c = stream_get_ch_(stream);
 	if(c==EOF) return eof_object;
 	switch (c) {
@@ -99,21 +99,21 @@ object_t *read_pair(stream_t *stream) {
 	int c;
 	object_t *car_obj;
 	object_t *cdr_obj;
-	
+
 	eat_whitespace(stream);
-	
+
 	c = stream_get_ch_(stream);
 	if(c==EOF) {fprintf(stderr,"(?\? ...)\n");return eof_object;}
 	if (c == ')') { /* read the empty list */
 		return the_empty_list;
 	}
 	stream_unget_ch(stream,c);
-	
+
 	car_obj = read_sx(stream);
-	
+
 	eat_whitespace(stream);
-	
-	c = stream_get_ch_(stream); 
+
+	c = stream_get_ch_(stream);
 	if(c==EOF) {fprintf(stderr,"(_ ?\?)\n");return eof_object;}
 	if (c == '.') { /* read improper list */
 		c = stream_peek_ch(stream);
@@ -139,7 +139,7 @@ object_t *read_pair(stream_t *stream) {
 	}
 	else { /* read list */
 		stream_unget_ch(stream,c);
-		cdr_obj = read_pair(stream);        
+		cdr_obj = read_pair(stream);
 		return cons(car_obj, cdr_obj);
 	}
 }
@@ -152,12 +152,12 @@ object_t *read_sx(stream_t *stream) {
 	float fnum=0;
 	#define BUFFER_MAX 1000
 	char buffer[BUFFER_MAX];
-	
+
 	eat_whitespace(stream);
-	
+
 	c = stream_get_ch_(stream);
 	if(c==EOF) return eof_object;
-	
+
 	if (c == '#') { /* read a boolean or character */
 		c = stream_get_ch_(stream);
 		if(c==EOF) return eof_object;
@@ -188,13 +188,18 @@ object_t *read_sx(stream_t *stream) {
 		num *= sign;
 		if(c=='.' && isdigit(stream_peek_ch(stream))){
 			// get float part...
-			int dd=1;
+			int dd=0;
+			long num2=0;
+			char dd2[256];
 			while (isdigit(c = stream_get_ch_(stream))) {
 				//printf("%f %d ",((float)(c-'0')/10),dd);
-				fnum +=  ((float)(c - '0')/(10^(dd++)));
+				//fnum +=  ((float)(c - '0')/(float)(10^(dd++)));
+				num2 = (num2 * 10) + (c - '0');
+				dd++;
 			}
-			fnum+= (float)num;
-			printf("fnum: %f\n",fnum);
+			sprintf(dd2,"%ld.%ld",num,num2);
+			fnum=atof(dd2);
+			//printf("str:%s fnum: %f\n",dd2,fnum);
 		}
 		if (is_delimiter(c)) {
 			stream_unget_ch(stream,c);
@@ -256,7 +261,7 @@ object_t *read_sx(stream_t *stream) {
 					buffer[i++] = c;
 				}
 				else {
-					fprintf(stderr, 
+					fprintf(stderr,
 							"string too long. Maximum length is %d\n",
 			 BUFFER_MAX);
 					//exit(1);
