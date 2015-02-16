@@ -319,6 +319,8 @@ object_t *eval_expression(object_t *arguments) {
 }
 
 object_t *eval_environment(object_t *arguments) {
+	if(!arguments) return the_global_environment;
+	if(!cadr(arguments)) return the_global_environment;
     return cadr(arguments);
 }
 
@@ -433,7 +435,7 @@ tailcall:
         if (is_primitive_proc(procedure) && 
             procedure->data.primitive_proc.fn == eval_proc) {
             exp = eval_expression(arguments);
-            //env = eval_environment(arguments);
+            env = eval_environment(arguments);
             goto tailcall;
         }
 
