@@ -433,7 +433,7 @@ tailcall:
         if (is_primitive_proc(procedure) && 
             procedure->data.primitive_proc.fn == eval_proc) {
             exp = eval_expression(arguments);
-            env = eval_environment(arguments);
+            //env = eval_environment(arguments);
             goto tailcall;
         }
 
@@ -442,7 +442,7 @@ tailcall:
             procedure->data.primitive_proc.fn == apply_proc) {
             procedure = apply_operator(arguments);
             arguments = apply_operands(arguments);
-        }
+		}
 
         if (is_primitive_proc(procedure)) {
             return (procedure->data.primitive_proc.fn)(arguments);
@@ -455,6 +455,7 @@ tailcall:
             exp = make_begin(procedure->data.compound_proc.body);
             goto tailcall;
         }
+		
         else {
             fprintf(stderr, "unknown procedure type\n");
             //exit(1);

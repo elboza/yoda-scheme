@@ -61,52 +61,52 @@ void write_sx(FILE *out, object_t *obj) {
 					putc(c, out);
 			}
 			break;
-				case T_STRING:
-					str = obj->data.string.value;
-					putchar('"');
-					while (*str != '\0') {
-						switch (*str) {
-							case '\n':
-								fprintf(out, "\\n");
-								break;
-							case '\\':
-								fprintf(out, "\\\\");
-								break;
-							case '"':
-								fprintf(out, "\\\"");
-								break;
-							default:
-								putc(*str, out);
-						}
-						str++;
-					}
-					putchar('"');
-					break;
-				case T_PAIR:
-					fprintf(out, "(");
-					write_pair(out, obj);
-					fprintf(out, ")");
-					break;
-				case T_PRIMITIVE_PROC:
-					fprintf(out, "#<primitive-procedure>");
-					break;
-				case T_COMPOUND_PROC:
-					fprintf(out, "#<compound-procedure>");
-					break;
-				case T_INPUT_PORT:
-					fprintf(out, "#<input-port>");
-					break;
-				case T_OUTPUT_PORT:
-					fprintf(out, "#<output-port>");
-					break;
-				case T_EOF_OBJECT:
-					fprintf(out, "#<eof>");
-					break;
-				case T_WARN_MSG:
-					fprintf(out,"%s\n",obj->data.string.value);
-					break;
-				default:
-					fprintf(stderr, "cannot write unknown type\n");
-					//exit(1);
+		case T_STRING:
+			str = obj->data.string.value;
+			fputc('"',out);
+			while (*str != '\0') {
+				switch (*str) {
+					case '\n':
+						fprintf(out, "\\n");
+						break;
+					case '\\':
+						fprintf(out, "\\\\");
+						break;
+					case '"':
+						fprintf(out, "\\\"");
+						break;
+					default:
+						putc(*str, out);
+				}
+				str++;
+			}
+			fputc('"',out);
+			break;
+		case T_PAIR:
+			fprintf(out, "(");
+			write_pair(out, obj);
+			fprintf(out, ")");
+			break;
+		case T_PRIMITIVE_PROC:
+			fprintf(out, "#<primitive-procedure>");
+			break;
+		case T_COMPOUND_PROC:
+			fprintf(out, "#<compound-procedure>");
+			break;
+		case T_INPUT_PORT:
+			fprintf(out, "#<input-port>");
+			break;
+		case T_OUTPUT_PORT:
+			fprintf(out, "#<output-port>");
+			break;
+		case T_EOF_OBJECT:
+			fprintf(out, "#<eof>");
+			break;
+		case T_WARN_MSG:
+			fprintf(out,"%s\n",obj->data.string.value);
+			break;
+		default:
+			fprintf(stderr, "cannot write unknown type\n");
+			//exit(1);
 	}
 }

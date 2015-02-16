@@ -109,8 +109,8 @@ void parse_args(int argc,char **argv,struct m_action *action,stream_t *stream)
 	}
 }
 void shell(stream_t *s){
-	printf("entering interactive-shell mode ...\n");
-	printf("type :h for help.\n");
+	printf("entering interactive-shell mode... ");
+	printf("(type :h for help).\n");
 	repl(s);
 }
 

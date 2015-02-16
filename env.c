@@ -581,7 +581,7 @@ object_t *load_proc(object_t *arguments) {
 		//exit(1);
 		return bottom;
 	}
-	while ((exp = read_sx(&stream)) != NULL) {
+	while ((exp = read_sx(&stream)) != eof_object) {
 		result = eval(exp, the_global_environment);
 	}
 	close_stream(&stream);
