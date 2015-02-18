@@ -795,7 +795,7 @@ void add_binding_to_frame(object_t *var, object_t *val, object_t *frame) {
 	set_car(frame, cons(var, car(frame)));
 	set_cdr(frame, cons(val, cdr(frame)));
 }
-  
+
 object_t *extend_environment(object_t *vars, object_t *vals,object_t *base_env) {
 	return cons(make_frame(vars, vals), base_env);
 }
@@ -812,8 +812,14 @@ object_t *lookup_variable_value(object_t *var, object_t *env) {
 			if (var == car(vars)) {
 				return car(vals);
 			}
+			if(var==cdr(vars)){
+				//printf("found &rest param \n");//,cdr(vars)->data.string.value);
+				return cdr(vals);
+			}
 			vars = cdr(vars);
 			vals = cdr(vals);
+			if(!vars) break;
+			if(vars->type!=T_PAIR) break;
 		}
 		env = enclosing_environment(env);
 	}
