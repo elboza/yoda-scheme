@@ -983,6 +983,9 @@ void init_env(void) {
 	let_symbol = make_symbol("let");
 	and_symbol = make_symbol("and");
 	or_symbol = make_symbol("or");
+	quasiquote_symbol=make_symbol("quasiquote");
+	unquote_symbol=make_symbol("unquote");
+	unquote_splicing_symbol=make_symbol("unquote-splicing");
 	
 	eof_object = alloc_object();
 	eof_object->type = T_EOF_OBJECT;

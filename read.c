@@ -277,6 +277,16 @@ object_t *read_sx(stream_t *stream) {
 		else if (c == '\'') { /* read quoted expression */
 			return cons(quote_symbol, cons(read_sx(stream), the_empty_list));
 		}
+		else if (c == '`') { /* read quasiquoted expression */
+			return cons(quasiquote_symbol, cons(read_sx(stream), the_empty_list));
+		}
+		else if ((c == ',') && ((stream_peek_ch(stream))=='@')) { /* read unquoted-splicing expression */
+			c=stream_get_ch_(stream);
+			return cons(unquote_splicing_symbol, cons(read_sx(stream), the_empty_list));
+		}
+		else if (c == ',') { /* read unquoted expression */
+			return cons(unquote_symbol, cons(read_sx(stream), the_empty_list));
+		}
 		else if (c == EOF) {
 			fprintf(stderr,"EOF\n");
 			return eof_object;

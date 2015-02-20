@@ -33,6 +33,17 @@ char is_quoted(object_t *expression) {
 	return is_tagged_list(expression, quote_symbol);
 }
 
+char is_quasiquoted(object_t *exp){
+	return is_tagged_list(exp,quasiquote_symbol);
+}
+
+char is_unquoted(object_t *exp){
+	return is_tagged_list(exp,unquote_symbol);
+}
+char is_unquoted_splicing(object_t *exp){
+	return is_tagged_list(exp,unquote_splicing_symbol);
+}
+
 object_t *text_of_quotation(object_t *exp) {
 	return cadr(exp);
 }
@@ -363,6 +374,22 @@ tailcall:
     else if (is_quoted(exp)) {
         return text_of_quotation(exp);
     }
+    else if (is_quasiquoted(exp)) {
+		if(is_unquoted(text_of_quotation(exp))){
+			printf("unquote...\n");
+			exp=text_of_quotation(text_of_quotation(exp));
+			goto tailcall;
+		}
+		return text_of_quotation(exp);
+	}
+//	else if (is_unquoted(exp)) {
+//		exp=text_of_quotation(exp);
+//		goto tailcall;
+//		//return text_of_quotation(exp);
+//	}
+//	else if (is_unquoted_splicing(exp)) {
+//		return text_of_quotation(exp);
+//	}
     else if (is_assignment(exp)) {
         return eval_assignment(exp, env);
     }
