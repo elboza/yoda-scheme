@@ -359,6 +359,50 @@ object_t *eval_definition(object_t *exp, object_t *env) {
     return ok_symbol;
 }
 
+object_t *qq_expand(object_t *exp,object_t *env){
+	if(is_unquoted(exp)){
+		return eval(text_of_quotation(exp),env);
+	}
+	else if(is_unquoted_splicing(exp)){
+		fprintf(stderr,"invalid context for unquote-slicing.\n");
+		return bottom;
+	}
+	else if(is_quasiquoted(exp)){
+		//return cons(quote_symbol,cons(exp,the_empty_list));
+		return exp;
+	}
+	else if(is_pair(exp)){
+		return cons(qq_expand_list(car(exp),env),qq_expand(cdr(exp),env));
+	}
+	else{
+		return exp;
+	}
+	//never reach this code
+	return exp;
+}
+
+object_t *qq_expand_list(object_t *exp,object_t *env){
+	if(is_unquoted(exp)){
+		return eval(text_of_quotation(exp),env);
+	}
+	else if(is_unquoted_splicing(exp)){
+		printf(",@ is TO FIX...");
+		return cons(qq_expand(car(text_of_quotation(exp)),env),qq_expand(cdr(text_of_quotation(exp)),env));
+	}
+	else if(is_quasiquoted(exp)){
+		//return cons(quote_symbol,cons(exp,the_empty_list));
+		return exp;
+	}
+	else if(is_pair(exp)){
+		return cons(qq_expand_list(car(exp),env),qq_expand(cdr(exp),env));
+	}
+	else{
+		return exp;
+	}
+	//never reach this code
+	return exp;
+}
+
 object_t *eval(object_t *exp, object_t *env) {
     object_t *procedure;
     object_t *arguments;
@@ -375,12 +419,9 @@ tailcall:
         return text_of_quotation(exp);
     }
     else if (is_quasiquoted(exp)) {
-		if(is_unquoted(text_of_quotation(exp))){
-			printf("unquote...\n");
-			exp=text_of_quotation(text_of_quotation(exp));
-			goto tailcall;
-		}
-		return text_of_quotation(exp);
+		exp=qq_expand(text_of_quotation(exp),env);
+		//goto tailcall;
+		return exp;
 	}
 //	else if (is_unquoted(exp)) {
 //		exp=text_of_quotation(exp);
