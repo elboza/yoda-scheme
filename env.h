@@ -92,6 +92,7 @@ object_t *interaction_environment_proc(object_t *arguments);
 object_t *null_environment_proc(object_t *arguments);
 object_t *environment_proc(object_t *arguments);
 object_t *eval_proc(object_t *arguments);
+object_t *append_proc(object_t *arguments);
 object_t *load_proc(object_t *arguments);
 object_t *open_input_port_proc(object_t *arguments);
 object_t *close_input_port_proc(object_t *arguments);

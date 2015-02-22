@@ -358,7 +358,20 @@ object_t *eval_definition(object_t *exp, object_t *env) {
                     env);
     return ok_symbol;
 }
-
+object_t *append_lists(object_t *list1,object_t *list2){
+	if(is_the_empty_list(list1)){
+		return list2;
+	}
+// 	if(!is_pair(list1)){
+// 		fprintf(stderr,"arg1 is not a list!\n");
+// 		return bottom;
+// 	}
+// 	if(!is_pair(list2)){
+// 		fprintf(stderr,"arg2 is not a list!\n");
+// 		return bottom;
+// 	}
+	return cons(car(list1),append_lists(cdr(list1),list2));
+}
 object_t *qq_expand(object_t *exp,object_t *env){
 	if(is_unquoted(exp)){
 		return eval(text_of_quotation(exp),env);
@@ -372,7 +385,7 @@ object_t *qq_expand(object_t *exp,object_t *env){
 		return exp;
 	}
 	else if(is_pair(exp)){
-		return cons(qq_expand_list(car(exp),env),qq_expand(cdr(exp),env));
+		return append_lists(qq_expand_list(car(exp),env),qq_expand(cdr(exp),env));
 	}
 	else{
 		return exp;
@@ -383,24 +396,25 @@ object_t *qq_expand(object_t *exp,object_t *env){
 
 object_t *qq_expand_list(object_t *exp,object_t *env){
 	if(is_unquoted(exp)){
-		return eval(text_of_quotation(exp),env);
+		return cons(eval(text_of_quotation(exp),env),the_empty_list);
 	}
 	else if(is_unquoted_splicing(exp)){
-		printf(",@ is TO FIX...");
+		//printf(",@ is TO FIX...");
 		return cons(qq_expand(car(text_of_quotation(exp)),env),qq_expand(cdr(text_of_quotation(exp)),env));
 	}
 	else if(is_quasiquoted(exp)){
 		//return cons(quote_symbol,cons(exp,the_empty_list));
-		return exp;
+		return cons(exp,the_empty_list);
 	}
 	else if(is_pair(exp)){
-		return cons(qq_expand_list(car(exp),env),qq_expand(cdr(exp),env));
+		//return cons(qq_expand_list(car(exp),env),qq_expand(cdr(exp),env));
+		return cons(append_lists(qq_expand_list(car(exp),env),qq_expand(cdr(exp),env)),the_empty_list);
 	}
 	else{
-		return exp;
+		return cons(exp,the_empty_list);
 	}
 	//never reach this code
-	return exp;
+	return cons(exp,the_empty_list);
 }
 
 object_t *eval(object_t *exp, object_t *env) {

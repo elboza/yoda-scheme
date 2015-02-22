@@ -565,6 +565,24 @@ object_t *eval_proc(object_t *arguments) {
 	exit(1);
 }
 
+object_t *append_proc(object_t *arguments){
+	object_t *list1,*list2;
+	list1=car(arguments);
+	list2=cadr(arguments);
+	if(is_the_empty_list(list1)){
+		return list2;
+	}
+	if(!is_pair(list1)){
+		fprintf(stderr,"arg1 is not a list!\n");
+		return bottom;
+	}
+	if(!is_pair(list2)){
+		fprintf(stderr,"arg2 is not a list!\n");
+		return bottom;
+	}
+	return cons(car(list1),append_proc(cons(cdr(list1),cons(list2,the_empty_list))));
+}
+
 object_t *load_proc(object_t *arguments) {
 	char *filename;
 	//FILE *in;
@@ -942,6 +960,8 @@ void populate_environment(object_t *env) {
 	add_procedure("output-port?"     , is_output_port_proc);
 	add_procedure("write-char"       , write_char_proc);
 	add_procedure("write"            , write_proc);
+	
+	add_procedure("append"           , append_proc);
  
 	add_procedure("error", error_proc);
 }
