@@ -399,7 +399,6 @@ object_t *qq_expand_list(object_t *exp,object_t *env){
 		return cons(eval(text_of_quotation(exp),env),the_empty_list);
 	}
 	else if(is_unquoted_splicing(exp)){
-		//printf(",@ is TO FIX...");
 		return cons(qq_expand(car(text_of_quotation(exp)),env),qq_expand(cdr(text_of_quotation(exp)),env));
 	}
 	else if(is_quasiquoted(exp)){
