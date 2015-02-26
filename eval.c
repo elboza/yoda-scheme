@@ -242,6 +242,10 @@ object_t *rest_operands(object_t *ops) {
     return cdr(ops);
 }
 
+char is_letstar(object_t *exp) {
+	return is_tagged_list(exp, letstar_symbol);
+}
+
 char is_let(object_t *exp) {
     return is_tagged_list(exp, let_symbol);
 }
@@ -289,6 +293,31 @@ object_t *let_to_application(object_t *exp) {
                make_lambda(let_parameters(exp),
                            let_body(exp)),
                let_arguments(exp));
+}
+
+object_t *make_let(object_t *bindings,object_t *body){
+	return cons(let_symbol,cons(bindings,body));
+}
+
+object_t *letstar_expand(object_t *exp){
+	object_t *e;
+	if(is_the_empty_list(let_bindings(exp)))
+	{
+		//return let_to_application(exp);
+		return cons(let_symbol,cons(the_empty_list,let_body(exp)));
+	}
+	else{
+		printf("some bindings\n");
+		write_debug(NULL,exp);
+		e=cons(let_symbol,
+			 cons(cons(car(let_bindings(exp)),the_empty_list),
+				  letstar_expand(cons(letstar_symbol,cons(cdr(let_bindings(exp)),let_body(exp))))));
+		//make_let(car(let_bindings(exp)),make_letstar(cdr(let_bindings(exp)),let_body(exp)));
+		printf("\n");
+		write_debug(NULL,e);
+		return e;
+	}
+	return bottom;
 }
 
 char is_and(object_t *exp) {
@@ -478,6 +507,11 @@ tailcall:
         exp = let_to_application(exp);
         goto tailcall;
     }
+    else if (is_letstar(exp)) {
+		printf("let* ...\n");
+		exp=letstar_expand(exp);
+		goto tailcall;
+	}
     else if (is_and(exp)) {
         exp = and_tests(exp);
         if (is_the_empty_list(exp)) {

@@ -45,6 +45,7 @@ object_t *operands(object_t *exp);
 char is_no_operands(object_t *ops);
 object_t *first_operand(object_t *ops);
 object_t *rest_operands(object_t *ops);
+char is_letstar(object_t *exp);
 char is_let(object_t *exp);
 object_t *let_bindings(object_t *exp);
 object_t *let_body(object_t *exp);
