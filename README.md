@@ -61,7 +61,8 @@ yet another scheme
  peek-char
  output-port?
  function &rest params ( . arg)
- ...
+let*
+...
 
 
 
@@ -70,7 +71,6 @@ yet another scheme
  define-syntax
  let-syntax
  syntax-rules
- let*
  letrec
  delay
  force

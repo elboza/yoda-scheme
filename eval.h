@@ -56,6 +56,7 @@ object_t *bindings_arguments(object_t *bindings);
 object_t *let_parameters(object_t *exp);
 object_t *let_arguments(object_t *exp);
 object_t *let_to_application(object_t *exp);
+object_t *letstar_expand(object_t *exp);
 char is_and(object_t *exp);
 object_t *and_tests(object_t *exp);
 char is_or(object_t *exp);
