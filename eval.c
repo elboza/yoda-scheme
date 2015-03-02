@@ -246,6 +246,10 @@ char is_letstar(object_t *exp) {
 	return is_tagged_list(exp, letstar_symbol);
 }
 
+char is_letrec(object_t *exp) {
+	return is_tagged_list(exp, letrec_symbol);
+}
+
 char is_let(object_t *exp) {
     return is_tagged_list(exp, let_symbol);
 }
@@ -308,6 +312,24 @@ object_t *letstar_expand(object_t *exp){
 		return e;
 	}
 	return bottom;
+}
+
+object_t *make_undef_vars(object_t *lp){
+	if(is_the_empty_list(lp)) return the_empty_list;
+	return cons(cons(car(lp),cons(cons(quote_symbol,cons(the_empty_list,the_empty_list)),the_empty_list)),make_undef_vars(cdr(lp)));
+}
+
+object_t *make_init_andbody(object_t *lp,object_t *lb,object_t *body){
+	if(is_the_empty_list(lp)) return body;
+//	return cons(set_variable_value(car(lparameters),eval(car(lbindings),env),env),make_init_andbody(cdr(lparameters),cdr(lbindings),body,env));
+	return cons(cons(set_symbol,cons(car(lp),cons(car(lb),the_empty_list))),make_init_andbody(cdr(lp),cdr(lb),body));
+}
+
+object_t *letrec_expand(object_t *exp){
+	object_t *e;
+	e=cons(let_symbol,cons(make_undef_vars(let_parameters(exp)),make_init_andbody(let_parameters(exp),let_arguments(exp),let_body(exp))));
+
+	return e;
 }
 
 char is_and(object_t *exp) {
@@ -499,6 +521,10 @@ tailcall:
     }
     else if (is_letstar(exp)) {
 		exp=letstar_expand(exp);
+		goto tailcall;
+	}
+	else if (is_letrec(exp)) {
+		exp=letrec_expand(exp);
 		goto tailcall;
 	}
     else if (is_and(exp)) {

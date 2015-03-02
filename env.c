@@ -1007,6 +1007,7 @@ void init_env(void) {
 	unquote_symbol=make_symbol("unquote");
 	unquote_splicing_symbol=make_symbol("unquote-splicing");
 	letstar_symbol=make_symbol("let*");
+	letrec_symbol=make_symbol("letrec");
 	
 	eof_object = alloc_object();
 	eof_object->type = T_EOF_OBJECT;

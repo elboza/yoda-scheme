@@ -3,7 +3,10 @@
 yet another scheme
 
 ####Done
- quote
+
+```
+
+quote
  define
  set!
  if
@@ -61,17 +64,21 @@ yet another scheme
  peek-char
  output-port?
  function &rest params ( . arg)
-let*
-...
+ let*
+ letrec
+ ...
 
+```
 
 
 ####TODO
+
+```
+
  defmacro
  define-syntax
  let-syntax
  syntax-rules
- letrec
  delay
  force
  zero?
@@ -83,3 +90,6 @@ let*
  list->string
  vector->list
  list->vector
+
+```
+
