@@ -477,6 +477,7 @@ object_t *qq_expand(object_t *exp,object_t *env){
 		return exp;
 	}
 	else if(is_pair(exp)){
+        //return append_lists(qq_expand_list(car(exp),env),the_empty_list);
 		return append_lists(qq_expand_list(car(exp),env),qq_expand(cdr(exp),env));
 	}
 	else{
