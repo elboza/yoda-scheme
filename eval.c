@@ -115,7 +115,7 @@ object_t *make_lambda(object_t *parameters, object_t *body) {
 }
 
 object_t *make_eval(object_t *exp) {
-	return cons(eval_symbol,exp);
+	return cons(cons(eval_symbol,exp),the_empty_list);
 }
 
 char is_lambda(object_t *exp) {
@@ -284,15 +284,12 @@ object_t *defmacro_name_and_args(object_t *exp) {
 }
 
 object_t *defmacro_body(object_t *exp) {
-	//object_t *e;
-	//e=make_symbol eval...
 	if (is_symbol(cadr(exp))) {
 		return caddr(exp);
 	}
 	else {
-		//make_lambda(..,cons(eval,...))
-		//return make_lambda(cdadr(exp),make_eval(cddr(exp)));
-		return make_lambda(cdadr(exp), cddr(exp));
+		return make_lambda(cdadr(exp),make_eval(cddr(exp)));
+		//return make_lambda(cdadr(exp), cddr(exp));
 	}
 }
 
@@ -352,7 +349,7 @@ object_t *defmacro_expand(object_t *exp,object_t *env) {
     printf("defmacro ...\n");
     write_sx(NULL,exp);printf("\n");
     write_debug(NULL,defmacro_name_and_args(exp));printf("\n");
-    write_debug(NULL,defmacro_body(exp));printf("\n");
+    write_sx(NULL,defmacro_body(exp));printf("\n");
     //add cons(eval_symbol,macro_body);
     define_variable(defmacro_name_and_args(exp), 
                     eval(defmacro_body(exp), env),
@@ -364,6 +361,7 @@ object_t *macroexpand_expand(object_t *exp,object_t *env) {
     //printf("macroexpand ...\n");
     //write_sx(NULL,cadr(exp));
     //printf("\n");
+    write_sx(NULL,cdr(exp));
     return cadr(exp);
 }
 
