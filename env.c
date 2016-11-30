@@ -734,6 +734,13 @@ object_t *write_proc(object_t *arguments) {
 	return ok_symbol;
 }
 
+object_t *debug_proc(object_t *arguments) {
+	//object_t *e;
+	write_debug(NULL,arguments);
+	printf("\n");
+	return bottom;
+}
+
 object_t *error_proc(object_t *arguments) {
 	while (!is_the_empty_list(arguments)) {
 		write_sx(stderr, car(arguments));
@@ -962,6 +969,8 @@ void populate_environment(object_t *env) {
 	add_procedure("write"            , write_proc);
 	
 	add_procedure("append"           , append_proc);
+
+	add_procedure("debug"            , debug_proc);
  
 	add_procedure("error", error_proc);
 }
@@ -1008,6 +1017,8 @@ void init_env(void) {
 	unquote_splicing_symbol=make_symbol("unquote-splicing");
 	letstar_symbol=make_symbol("let*");
 	letrec_symbol=make_symbol("letrec");
+	defmacro_symbol=make_symbol("defmacro");
+	macroexpand_symbol=make_symbol("macroexpand");
 	
 	eof_object = alloc_object();
 	eof_object->type = T_EOF_OBJECT;

@@ -11,7 +11,8 @@
 char is_delimiter(int c) {
 	return isspace(c) || c == EOF ||
 	c == '('   || c == ')' ||
-	c == '"'   || c == ';';
+	c == '"'   || c == ';' ||
+	c == 0x27   || c == '`';
 }
 
 char is_initial(int c) {

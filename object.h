@@ -69,6 +69,8 @@ object_t *unquote_symbol;
 object_t *unquote_splicing_symbol;
 object_t *letstar_symbol;
 object_t *letrec_symbol;
+object_t *defmacro_symbol;
+object_t *macroexpand_symbol;
 object_t *eof_object;
 object_t *the_empty_environment;
 object_t *the_global_environment;

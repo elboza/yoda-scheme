@@ -250,6 +250,14 @@ char is_letrec(object_t *exp) {
 	return is_tagged_list(exp, letrec_symbol);
 }
 
+char is_defmacro(object_t *exp) {
+    return is_tagged_list(exp, defmacro_symbol);
+}
+
+char is_macroexpand(object_t *exp) {
+    return is_tagged_list(exp, macroexpand_symbol);
+}
+
 char is_let(object_t *exp) {
     return is_tagged_list(exp, let_symbol);
 }
@@ -312,6 +320,21 @@ object_t *letstar_expand(object_t *exp){
 		return e;
 	}
 	return bottom;
+}
+
+object_t *defmacro_expand(object_t *exp) {
+    printf("defmacro ...\n");
+    object_t *e;
+    write_debug(NULL,exp);
+    printf("\n");
+    return bottom;
+}
+
+object_t *macroexpand_expand(object_t *exp) {
+    //printf("macroexpand ...\n");
+    //write_sx(NULL,cadr(exp));
+    //printf("\n");
+    return cadr(exp);
 }
 
 object_t *make_undef_vars(object_t *lp){
@@ -527,6 +550,14 @@ tailcall:
 		exp=letrec_expand(exp);
 		goto tailcall;
 	}
+    else if (is_defmacro(exp)) {
+        exp=defmacro_expand(exp);
+        goto tailcall;
+    }
+    else if (is_macroexpand(exp)) {
+        exp=macroexpand_expand(exp);
+        goto tailcall;
+    }
     else if (is_and(exp)) {
         exp = and_tests(exp);
         if (is_the_empty_list(exp)) {
