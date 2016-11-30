@@ -114,6 +114,10 @@ object_t *make_lambda(object_t *parameters, object_t *body) {
     return cons(lambda_symbol, cons(parameters, body));
 }
 
+object_t *make_eval(object_t *exp) {
+	return cons(eval_symbol,exp);
+}
+
 char is_lambda(object_t *exp) {
     return is_tagged_list(exp, lambda_symbol);
 }
@@ -270,6 +274,28 @@ object_t *let_body(object_t *exp) {
     return cddr(exp);
 }
 
+object_t *defmacro_name_and_args(object_t *exp) {
+	if (is_symbol(cadr(exp))) {
+		return cadr(exp);
+	}
+	else {
+		return caadr(exp);
+	}
+}
+
+object_t *defmacro_body(object_t *exp) {
+	//object_t *e;
+	//e=make_symbol eval...
+	if (is_symbol(cadr(exp))) {
+		return caddr(exp);
+	}
+	else {
+		//make_lambda(..,cons(eval,...))
+		//return make_lambda(cdadr(exp),make_eval(cddr(exp)));
+		return make_lambda(cdadr(exp), cddr(exp));
+	}
+}
+
 object_t *binding_parameter(object_t *binding) {
     return car(binding);
 }
@@ -322,15 +348,19 @@ object_t *letstar_expand(object_t *exp){
 	return bottom;
 }
 
-object_t *defmacro_expand(object_t *exp) {
+object_t *defmacro_expand(object_t *exp,object_t *env) {
     printf("defmacro ...\n");
-    object_t *e;
-    write_debug(NULL,exp);
-    printf("\n");
+    write_sx(NULL,exp);printf("\n");
+    write_debug(NULL,defmacro_name_and_args(exp));printf("\n");
+    write_debug(NULL,defmacro_body(exp));printf("\n");
+    //add cons(eval_symbol,macro_body);
+    define_variable(defmacro_name_and_args(exp), 
+                    eval(defmacro_body(exp), env),
+                    env);
     return bottom;
 }
 
-object_t *macroexpand_expand(object_t *exp) {
+object_t *macroexpand_expand(object_t *exp,object_t *env) {
     //printf("macroexpand ...\n");
     //write_sx(NULL,cadr(exp));
     //printf("\n");
@@ -551,11 +581,11 @@ tailcall:
 		goto tailcall;
 	}
     else if (is_defmacro(exp)) {
-        exp=defmacro_expand(exp);
+        exp=defmacro_expand(exp,env);
         goto tailcall;
     }
     else if (is_macroexpand(exp)) {
-        exp=macroexpand_expand(exp);
+        exp=macroexpand_expand(exp,env);
         goto tailcall;
     }
     else if (is_and(exp)) {

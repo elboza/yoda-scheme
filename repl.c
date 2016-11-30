@@ -82,6 +82,7 @@ void repl(stream_t *stream)
 	//if(check_funny()) funny_shell_disclaimer(); else normal_shell_disclaimer();
 	//printf("?!?entering shell-interactive mode...\n");
 	#ifdef HAVE_LIBREADLINE
+	rl_readline_name="yscm";
 	rl_variable_bind("blink-match-paren","on");
 	#endif
 	while(!quit_shell)

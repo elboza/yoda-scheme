@@ -1,7 +1,7 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-typedef enum {T_NONE, T_BOTTOM, T_EMPTY_LIST, T_ATOM, T_SYMBOL, T_STRING, T_NUMBER, T_INTEGER, T_FLOAT, T_PAIR, T_PRIMITIVE_PROC, T_COMPOUND_PROC, T_LAMBDA, T_DEFINE, T_CHARACTER, T_BOOLEAN, T_INPUT_PORT, T_OUTPUT_PORT, T_EOF_OBJECT, T_WARN_MSG } object_type;
+typedef enum {T_NONE, T_BOTTOM, T_EMPTY_LIST, T_ATOM, T_SYMBOL, T_STRING, T_NUMBER, T_INTEGER, T_FLOAT, T_PAIR, T_PRIMITIVE_PROC, T_COMPOUND_PROC, T_LAMBDA, T_DEFINE, T_CHARACTER, T_BOOLEAN, T_INPUT_PORT, T_OUTPUT_PORT, T_EOF_OBJECT, T_WARN_MSG, T_MACRO } object_type;
 
 typedef struct object_t {
 	object_type type;
@@ -71,6 +71,7 @@ object_t *letstar_symbol;
 object_t *letrec_symbol;
 object_t *defmacro_symbol;
 object_t *macroexpand_symbol;
+object_t *eval_symbol;
 object_t *eof_object;
 object_t *the_empty_environment;
 object_t *the_global_environment;
