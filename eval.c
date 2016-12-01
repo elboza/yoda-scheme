@@ -451,22 +451,30 @@ object_t *eval_definition(object_t *exp, object_t *env) {
     return ok_symbol;
 }
 object_t *append_lists(object_t *list1,object_t *list2){
+    //write_sx(NULL,list1);
+    //write_sx(NULL,list2);
+    object_t *x1=list1;
+    object_t *x2=list2;
 	if(is_the_empty_list(list1)){
 		return list2;
 	}
-// 	if(!is_pair(list1)){
-// 		fprintf(stderr,"arg1 is not a list!\n");
-// 		return bottom;
-// 	}
-// 	if(!is_pair(list2)){
-// 		fprintf(stderr,"arg2 is not a list!\n");
-// 		return bottom;
-// 	}
-	return cons(car(list1),append_lists(cdr(list1),list2));
+ 	if(!is_pair(list1)){
+ 		fprintf(stderr,"arg1 is not a list!\n");
+        //write_sx(NULL,list1);
+        x1=cons(list1,the_empty_list);
+ 		//return bottom;
+ 	}
+ 	if(!is_pair(list2)){
+ 		fprintf(stderr,"arg2 is not a list!\n");
+        x2=cons(list2,the_empty_list);
+ 		//return bottom;
+ 	}
+    return cons(car(x1),append_lists(cdr(x1),x2));
+	//return cons(car(list1),append_lists(cdr(list1),list2));
 }
 object_t *qq_expand(object_t *exp,object_t *env){
 	if(is_unquoted(exp)){
-		return eval(text_of_quotation(exp),env);
+        return eval(text_of_quotation(exp),env);
 	}
 	else if(is_unquoted_splicing(exp)){
 		fprintf(stderr,"invalid context for unquote-slicing.\n");
@@ -475,10 +483,23 @@ object_t *qq_expand(object_t *exp,object_t *env){
 	else if(is_quasiquoted(exp)){
 		//return cons(quote_symbol,cons(exp,the_empty_list));
 		return exp;
+        //return qq_expand(qq_expand(exp,env),env);
 	}
 	else if(is_pair(exp)){
         //return append_lists(qq_expand_list(car(exp),env),the_empty_list);
-		return append_lists(qq_expand_list(car(exp),env),qq_expand(cdr(exp),env));
+        //object_t *e1=qq_expand_list(car(exp),env);
+        //object_t *e2=qq_expand(cdr(exp),env);
+        //printf("car: ");
+        //write_sx(NULL,e1);
+        //printf("\ncdr: ");
+        //write_sx(NULL,cdr(exp));
+        //printf("\nnext: ");
+        //write_sx(NULL,e2);
+        //printf("\n");
+        object_t *x=append_lists(qq_expand_list(car(exp),env),qq_expand(cdr(exp),env));
+        write_sx(NULL,x);
+        return bottom;
+		//return append_lists(qq_expand_list(car(exp),env),qq_expand(cdr(exp),env));
 	}
 	else{
 		return exp;
@@ -492,7 +513,10 @@ object_t *qq_expand_list(object_t *exp,object_t *env){
 		return cons(eval(text_of_quotation(exp),env),the_empty_list);
 	}
 	else if(is_unquoted_splicing(exp)){
-		return cons(qq_expand(car(text_of_quotation(exp)),env),qq_expand(cdr(text_of_quotation(exp)),env));
+		//return cons(qq_expand(car(text_of_quotation(exp)),env),qq_expand(cdr(text_of_quotation(exp)),env));
+        //object_t *e=text_of_quotation(exp);
+        //write_sx(NULL,e);
+        return eval(text_of_quotation(exp),env);
 	}
 	else if(is_quasiquoted(exp)){
 		//return cons(quote_symbol,cons(exp,the_empty_list));
@@ -500,6 +524,9 @@ object_t *qq_expand_list(object_t *exp,object_t *env){
 	}
 	else if(is_pair(exp)){
 		//return cons(qq_expand_list(car(exp),env),qq_expand(cdr(exp),env));
+        //write_sx(NULL,qq_expand_list(car(exp),env));
+        //printf("\n");
+        //return bottom;
 		return cons(append_lists(qq_expand_list(car(exp),env),qq_expand(cdr(exp),env)),the_empty_list);
 	}
 	else{
@@ -525,6 +552,10 @@ tailcall:
         return text_of_quotation(exp);
     }
     else if (is_quasiquoted(exp)) {
+        write_debug(NULL,exp);
+        printf("\n");
+        write_sx(NULL,exp);
+        printf("\n");
 		exp=qq_expand(text_of_quotation(exp),env);
 		//goto tailcall;
 		return exp;
