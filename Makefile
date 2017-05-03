@@ -10,7 +10,7 @@ else
 $(shell echo "">config.h)
 endif
 LIBS= -lm $(LIBREADLINE) 
-OBJECTS= main.o env.o repl.o eval.o object.o print.o read.o stream.o
+OBJECTS= main.o env.o repl.o eval.o object.o print.o read.o stream.o macro.o
 DIST_SOURCES= *.c *.h Makefile README.md *.man
 TARGET=yscm
 PNAME=Yoda-Scheme
