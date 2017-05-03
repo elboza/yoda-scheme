@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include "object.h"
+#include "env.h"
 
 object_t* alloc_object(){
 	object_t *obj;
@@ -11,6 +12,20 @@ object_t* alloc_object(){
 		exit(1);
 	}
 	return obj;
+}
+void delete_object(object_t *obj){
+	if(obj==NULL) return;
+	if(is_pair(obj)){
+		delete_object(car(obj));
+		delete_object(cdr(obj));
+	}
+	if(is_symbol(obj)){
+		free(obj->data.symbol.value);
+	}
+	if(is_string(obj)){
+		free(obj->data.string.value);
+	}
+	free(obj);
 }
 char is_the_empty_list(object_t *obj) {
 	return obj == the_empty_list;

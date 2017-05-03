@@ -1027,4 +1027,6 @@ void init_env(void) {
 	the_empty_environment = the_empty_list;
 	
 	the_global_environment = make_environment();
+
+	the_macro_environment = setup_environment();
 }

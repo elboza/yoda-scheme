@@ -46,6 +46,7 @@ typedef struct object_t {
 } object_t;
 
 object_t* alloc_object(void);
+void delete_object(object_t *obj);
 
 object_t *the_empty_list;
 object_t *false;
@@ -75,6 +76,7 @@ object_t *eval_symbol;
 object_t *eof_object;
 object_t *the_empty_environment;
 object_t *the_global_environment;
+object_t *the_macro_environment;
 
 object_t *cons(object_t *car, object_t *cdr);
 object_t *car(object_t *pair);
