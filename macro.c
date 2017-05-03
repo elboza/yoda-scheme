@@ -14,14 +14,15 @@ int is_define_macro(object_t *obj){
 	}
 	return 0;
 }
-int is_macro(object_t *obj){
+object_t* is_macro(object_t *obj){
 	object_t *x;
 	if(obj==NULL) return 0;
 	if(obj==the_empty_list) return 0;
-	if((x=lookup_variable_value(obj,the_macro_environment))!=NULL){
+	if((x=lookup_macro(obj,the_macro_environment))!=NULL){
 		printf("trovato !!\n");
+		return x;
 	}
-	return 0;
+	return NULL;
 }
 object_t* define_macro(object_t *obj){
 	printf("macro %s defined\n",caadr(obj)->data.symbol.value);
@@ -35,12 +36,40 @@ object_t* define_macro(object_t *obj){
 	//delete_object(obj);
 	return bottom;
 }
-object_t* expand_macro(object_t *obj){
+object_t* expand_macro(object_t *obj,object_t *vals){
 	//delete_object(obj);
 	return bottom;
 }
 object_t* macro(object_t *obj){
+	object_t *x;
 	if(is_define_macro(obj)) return define_macro(obj);
-	if(is_macro(obj)) return expand_macro(obj);
+	if((x=is_macro(obj))!=NULL) return expand_macro(x,cdr(obj));
 	return obj;
+}
+object_t *lookup_macro(object_t *var, object_t *env) {
+	object_t *frame;
+	object_t *vars;
+	object_t *vals;
+	while (!is_the_empty_list(env)) {
+		frame = first_frame(env);
+		vars = frame_variables(frame);
+		vals = frame_values(frame);
+		while (!is_the_empty_list(vars)) {
+			if (car(var) == car(vars)) {
+				return car(vals);
+			}
+			if(car(var)==cdr(vars)){
+				//printf("found &rest param \n");//,cdr(vars)->data.string.value);
+				return cdr(vals);
+			}
+			vars = cdr(vars);
+			vals = cdr(vals);
+			if(!vars) break;
+			if(vars->type!=T_PAIR) break;
+		}
+		env = enclosing_environment(env);
+	}
+	//fprintf(stderr, "unbound variable, %s\n", var->data.symbol.value);
+	//exit(1);
+	return NULL;
 }
