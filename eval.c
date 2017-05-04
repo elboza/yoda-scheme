@@ -453,6 +453,7 @@ object_t *eval_definition(object_t *exp, object_t *env) {
 object_t *append_lists(object_t *list1,object_t *list2){
     //write_sx(NULL,list1);
     //write_sx(NULL,list2);
+    //return append_proc(cons(list1,cons(list2,the_empty_list)));
     object_t *x1=list1;
     object_t *x2=list2;
 	if(is_the_empty_list(list1)){
