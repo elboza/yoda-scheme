@@ -5,6 +5,7 @@
 #include "env.h"
 #include "eval.h"
 #include "print.h"
+#include "macro.h"
 
 char is_self_evaluating(object_t *exp) {
 	return is_boolean(exp)   ||
@@ -543,6 +544,7 @@ object_t *eval(object_t *exp, object_t *env) {
     object_t *result;
 
 tailcall:
+    //exp=macro(exp);
     if (is_self_evaluating(exp)) {
         return exp;
     }

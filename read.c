@@ -6,7 +6,6 @@
 #include "stream.h"
 #include "read.h"
 #include "env.h"
-#include "macro.h"
 
 
 char is_delimiter(int c) {
@@ -137,12 +136,12 @@ object_t *read_pair(stream_t *stream) {
 			//exit(1);
 			return bottom;
 		}
-		return macro(cons(car_obj, cdr_obj));
+		return cons(car_obj, cdr_obj);
 	}
 	else { /* read list */
 		stream_unget_ch(stream,c);
 		cdr_obj = read_pair(stream);
-		return macro(cons(car_obj, cdr_obj));
+		return cons(car_obj, cdr_obj);
 	}
 }
 

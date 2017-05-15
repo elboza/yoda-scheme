@@ -16,8 +16,8 @@ int is_define_macro(object_t *obj){
 }
 object_t* is_macro(object_t *obj){
 	object_t *x;
-	if(obj==NULL) return 0;
-	if(obj==the_empty_list) return 0;
+	if(obj==NULL) return NULL;
+	if(obj==the_empty_list) return NULL;
 	if((x=lookup_macro(obj,the_macro_environment))!=NULL){
 		printf("trovato !!\n");
 		return x;
