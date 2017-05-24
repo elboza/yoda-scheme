@@ -73,6 +73,8 @@ object_t *eval_environment(object_t *arguments);
 object_t *list_of_values(object_t *exps, object_t *env);
 object_t *eval_assignment(object_t *exp, object_t *env);
 object_t *eval_definition(object_t *exp, object_t *env);
+object_t *append_lists(object_t *list1,object_t *list2);
+object_t *append2_proc(object_t *arguments);
 object_t *qq_expand(object_t *exp,object_t *env);
 object_t *qq_expand_list(object_t *exp,object_t *env);
 object_t *eval(object_t *exp, object_t *env);

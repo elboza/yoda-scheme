@@ -970,6 +970,8 @@ void populate_environment(object_t *env) {
 	
 	add_procedure("append"           , append_proc);
 
+	add_procedure("append2"           , append2_proc);
+
 	add_procedure("debug"            , debug_proc);
  
 	add_procedure("error", error_proc);
