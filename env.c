@@ -1019,8 +1019,8 @@ void init_env(void) {
 	unquote_splicing_symbol=make_symbol("unquote-splicing");
 	letstar_symbol=make_symbol("let*");
 	letrec_symbol=make_symbol("letrec");
-	defmacro_symbol=make_symbol("defmacro2");
-	macroexpand_symbol=make_symbol("macroexpand2");
+	defmacro_symbol=make_symbol("defmacro");
+	macroexpand_symbol=make_symbol("macroexpand");
 	eval_symbol=make_symbol("eval");
 	
 	eof_object = alloc_object();

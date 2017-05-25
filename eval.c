@@ -347,10 +347,10 @@ object_t *letstar_expand(object_t *exp){
 }
 
 object_t *defmacro_expand(object_t *exp,object_t *env) {
-    printf("defmacro ...\n");
-    write_sx(NULL,exp);printf("\n");
-    write_debug(NULL,defmacro_name_and_args(exp));printf("\n");
-    write_sx(NULL,defmacro_body(exp));printf("\n");
+    //printf("defmacro ...\n");
+    //write_sx(NULL,exp);printf("\n");
+    //write_debug(NULL,defmacro_name_and_args(exp));printf("\n");
+    //write_sx(NULL,defmacro_body(exp));printf("\n");
     //add cons(eval_symbol,macro_body);
     define_variable(defmacro_name_and_args(exp), 
                     eval(defmacro_body(exp), env),
@@ -682,10 +682,19 @@ tailcall:
             return (procedure->data.primitive_proc.fn)(arguments);
         }
         else if (is_compound_proc(procedure)) {
+        	if(is_pair(procedure->data.compound_proc.parameters)){
             env = extend_environment( 
                        procedure->data.compound_proc.parameters,
                        arguments,
                        procedure->data.compound_proc.env);
+        	}
+        	else{
+        		//printf("lambda rest params\n");
+        		env = extend_environment( 
+                       cons(procedure->data.compound_proc.parameters,the_empty_list),
+                       cons(arguments,the_empty_list),
+                       procedure->data.compound_proc.env);
+        	}
             exp = make_begin(procedure->data.compound_proc.body);
             goto tailcall;
         }
