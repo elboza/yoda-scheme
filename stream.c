@@ -47,8 +47,8 @@ void close_stream(stream_t *s){
 	}
 	init_stream(s);
 }
-char stream_get_ch_(stream_t *s){
-	char c;
+int stream_get_ch_(stream_t *s){
+	int c;
 	switch(s->type){
 		case TSTREAM_FILE:
 		case TSTREAM_STDIN:
@@ -64,7 +64,7 @@ char stream_get_ch_(stream_t *s){
 	}
 	return c;
 }
-void stream_unget_ch(stream_t *s,char c){
+void stream_unget_ch(stream_t *s,int c){
 	switch(s->type){
 		case TSTREAM_FILE:
 		case TSTREAM_STDIN:
@@ -79,8 +79,8 @@ void stream_unget_ch(stream_t *s,char c){
 			break;
 	}
 }
-char stream_peek_ch(stream_t *s){
-	char c;
+int stream_peek_ch(stream_t *s){
+	int c;
 	c=stream_get_ch_(s);
 	stream_unget_ch(s,c);
 	return c;
