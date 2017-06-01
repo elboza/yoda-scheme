@@ -72,6 +72,7 @@ void stream_unget_ch(stream_t *s,int c){
 			break;
 		case TSTREAM_STR:
 			if(s->ptr<=s->start) return;
+			if(c == EOF) return;
 			*(--s->ptr)=c;
 			break;
 		default:
