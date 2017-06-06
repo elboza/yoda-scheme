@@ -66,6 +66,8 @@ quote
  function &rest params ( . arg)
  let*
  letrec
+ defmacro
+ display
  ...
 
 ```
@@ -75,7 +77,6 @@ quote
 
 ```
 
- defmacro
  define-syntax
  let-syntax
  syntax-rules

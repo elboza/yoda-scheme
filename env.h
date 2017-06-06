@@ -106,6 +106,7 @@ object_t *close_output_port_proc(object_t *arguments);
 object_t *is_output_port_proc(object_t *arguments);
 object_t *write_char_proc(object_t *arguments);
 object_t *write_proc(object_t *arguments);
+object_t *display_proc(object_t *arguments);
 object_t *debug_proc(object_t *arguments);
 object_t *error_proc(object_t *arguments);
 object_t *make_compound_proc(object_t *parameters, object_t *body, object_t *env);

@@ -734,6 +734,20 @@ object_t *write_proc(object_t *arguments) {
 	return ok_symbol;
 }
 
+object_t *display_proc(object_t *arguments) {
+	object_t *exp;
+	FILE *out;
+	
+	exp = car(arguments);
+	arguments = cdr(arguments);
+	out = is_the_empty_list(arguments) ?
+	stdout :
+	car(arguments)->data.output_port.stream;
+	display_sx(out, exp);
+	fflush(out);
+	return ok_symbol;
+}
+
 object_t *debug_proc(object_t *arguments) {
 	//object_t *e;
 	write_debug(NULL,arguments);
@@ -967,6 +981,8 @@ void populate_environment(object_t *env) {
 	add_procedure("output-port?"     , is_output_port_proc);
 	add_procedure("write-char"       , write_char_proc);
 	add_procedure("write"            , write_proc);
+
+	add_procedure("display"            , display_proc);
 	
 	add_procedure("append"           , append_proc);
 
