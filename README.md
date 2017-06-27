@@ -1,8 +1,34 @@
-##Yoda-Scheme
+## Yoda-Scheme
 
-yet another scheme
+yet another scheme interpreter
 
-####Done
+### build
+
+```
+make help     #(to see make options)
+make
+sudo make install
+
+```
+
+#### run
+
+```
+Yoda-Scheme v0.1
+
+USAGE: yscm [options] [file]
+valid options:
+-i              --shell         interactive (shell mode)
+-h              --help          show this help
+-v              --version       prints scheme version number
+-s              --stdin         read prog from stdin
+-f file         --file          read file
+-x 'prog'       --exec          read & execute prog
+
+
+```
+
+#### Done
 
 ```
 
@@ -73,7 +99,7 @@ quote
 ```
 
 
-####TODO
+#### TODO
 
 ```
 

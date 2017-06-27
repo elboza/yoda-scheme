@@ -103,7 +103,7 @@ void repl(stream_t *stream)
 	}
 }
 void show_help(){
-	printf("%s interpreter, by Fernando Iazeolla 2015(c)\n",PROGNAME);
+	printf("%s interpreter v%s, by Fernando Iazeolla 2015-2017(c)\n",PROGNAME,VERSION);
 	printf(":q                ~ exit interpreter\n");
 	printf(":h                ~ this help\n");
 	//printf(":l file           ~ load file\n");
